@@ -205,6 +205,11 @@
                             Fast Forward 1 Week
                         </button>
                     </div>
+                    <div class="mt-2">
+                        <button onclick="advanceYear()" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white rounded-xl text-xs font-black shadow-md shadow-amber-500/20">
+                            Advance 1 Year
+                        </button>
+                    </div>
 
                     <div class="mt-3 rounded-xl bg-slate-900/80 border border-slate-800 p-3">
                         <div class="flex items-center justify-between mb-2">
@@ -241,6 +246,61 @@
                             <span class="text-[9px] text-indigo-300 font-medium">Live Objectives</span>
                         </div>
                         <div id="quest-board" class="space-y-2"></div>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Life System Status</p>
+                            <span class="text-[9px] text-emerald-300 font-medium">Age + Career</span>
+                        </div>
+                        <div id="life-system-status" class="grid grid-cols-2 gap-2"></div>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Genetics & Family</p>
+                            <span class="text-[9px] text-pink-300 font-medium">Inherited traits</span>
+                        </div>
+                        <div id="genetics-overview" class="space-y-2"></div>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Legacy & Family Tree</p>
+                            <span class="text-[9px] text-amber-300 font-medium">History</span>
+                        </div>
+                        <div id="family-tree-overview" class="space-y-2"></div>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Career Ladder</p>
+                            <span class="text-[9px] text-indigo-300 font-medium">Progression</span>
+                        </div>
+                        <div id="career-ladder-overview" class="space-y-2"></div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-4 border border-slate-700/60 shadow-xl mt-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-base font-black text-slate-100">World Explorer</h3>
+                        <button onclick="openWorld3DModal()" class="px-2.5 py-1.5 bg-indigo-600/80 hover:bg-indigo-500 text-white rounded-lg text-[10px] font-bold">3D Mode</button>
+                    </div>
+                    <div id="world-travel-list" class="space-y-2"></div>
+                    <div class="mt-3 rounded-xl bg-slate-900/80 border border-slate-800 p-2.5 text-[10px] text-slate-300">
+                        <span class="font-bold text-indigo-300">Current world:</span> <span id="current-world-label">Tomodachi Island</span>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-4 border border-slate-700/60 shadow-xl mt-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-base font-black text-slate-100">Life & Family Timeline</h3>
+                        <span class="text-[9px] font-bold text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded px-1.5 py-0.5">Live</span>
+                    </div>
+                    <div id="life-events-list" class="space-y-2"></div>
+                    <div class="mt-3 rounded-xl bg-slate-900/80 border border-slate-800 p-2.5">
+                        <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-1">World Story Feed</p>
+                        <div id="world-story-feed" class="space-y-1.5 text-[10px] text-slate-300"></div>
                     </div>
                 </div>
 
@@ -499,6 +559,39 @@
         </div>
     </div>
 
+    <!-- MODAL 3: 3D WORLD MODE -->
+    <div id="world-3d-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-card max-w-md w-full rounded-3xl p-4 border border-slate-700 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <div>
+                    <p class="text-[10px] uppercase tracking-wider text-indigo-300 font-bold">3D World View</p>
+                    <h3 id="world-3d-current-name" class="text-lg font-black text-slate-100">Tomodachi Island</h3>
+                </div>
+                <button onclick="closeWorld3DModal()" class="text-slate-400 hover:text-slate-200">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="relative h-40 rounded-2xl bg-gradient-to-br from-sky-500/20 via-indigo-500/20 to-slate-900 border border-slate-800 overflow-hidden">
+                <div class="absolute inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] [background-size:12px_12px] opacity-30"></div>
+                <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 rounded-full border border-indigo-400/40 bg-indigo-500/10 shadow-[0_0_30px_rgba(99,102,241,0.2)]"></div>
+                <div class="absolute bottom-4 left-3 text-[10px] text-slate-200 bg-slate-900/80 px-2 py-1 rounded border border-slate-700">Live world</div>
+                <div class="absolute bottom-4 right-3 text-[10px] text-emerald-300 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">Active</div>
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-2">Nearby Miis</p>
+                    <div id="world-3d-mii-list" class="space-y-2"></div>
+                </div>
+                <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-2.5">
+                    <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-2">Conversation</p>
+                    <div id="world-chat-output" class="text-[11px] text-slate-200 leading-relaxed min-h-[60px]">Select a Mii to start talking.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- JAVASCRIPT APP ENGINE -->
     <script>
         // -------------------------------------------------------------
@@ -514,19 +607,85 @@
             "Faith", "Diofe", "Sarai", "Zena Joplin", "Koa", "Nomi"
         ];
 
+        const LIFE_JOBS = ["Producer", "Designer", "Chef", "Researcher", "Engineer", "Photographer", "Teacher", "Musician", "Artist", "Manager", "Doctor", "Writer"];
+        const LIFE_SCHOOL_TRACKS = ["Schooling", "College Prep", "Trade Training", "Creative Arts", "Career Focus"];
+        const GENETIC_TRAITS = [
+            "dreamer", "charismatic", "brave", "gentle", "dramatic", "calm", "curious", "bold", "observant", "creative", "ambitious", "playful"
+        ];
+        const GENE_PALETTES = {
+            hair: ["Brown", "Blonde", "Black", "Silver", "Red", "Chestnut"],
+            eyes: ["Hazel", "Blue", "Green", "Violet", "Amber", "Crystal"],
+            voice: ["Warm", "Bright", "Smooth", "Harmonious", "Soft", "Bold"],
+            skin: ["Warm Tan", "Fair", "Sun-kissed", "Deep Brown", "Rose", "Golden"],
+            height: ["Short", "Average", "Tall", "Very Tall"],
+            build: ["Slim", "Athletic", "Rounded", "Tall & Lean"]
+        };
+
         // Mii State Tracking
         const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        let miiData = LORE_MIIS.map((name, index) => ({
-            id: index + 1,
-            name: name,
-            planetId: "earth",
-            starred: index < 5,
-            level: Math.floor(Math.random() * 20) + 1,
-            genrePreference: ["Pop", "Synthwave", "Rock", "Cosmic Disco"][index % 4],
-            birthdayMonth: MONTH_NAMES[index % MONTH_NAMES.length],
-            relationship: index % 3 === 0 ? "Close Friends" : index % 3 === 1 ? "Music Crew" : "Supportive Neighbors",
-            friendship: 55 + (index * 7) % 40
-        }));
+        let miiData = LORE_MIIS.map((name, index) => {
+            const geneticsPool = [
+                { hair: 'Brown', eyes: 'Hazel', voice: 'Warm' },
+                { hair: 'Blonde', eyes: 'Blue', voice: 'Bright' },
+                { hair: 'Black', eyes: 'Green', voice: 'Smooth' },
+                { hair: 'Silver', eyes: 'Violet', voice: 'Harmonious' }
+            ];
+            const traits = geneticsPool[index % geneticsPool.length];
+            const age = 18 + Math.floor(Math.random() * 32);
+            const job = LIFE_JOBS[index % LIFE_JOBS.length];
+            const lifeStage = age < 13 ? 'child' : age < 18 ? 'teen' : age < 30 ? 'young adult' : age < 60 ? 'adult' : 'elder';
+            const dominantGene = GENETIC_TRAITS[(index * 3) % GENETIC_TRAITS.length];
+            return {
+                id: index + 1,
+                name: name,
+                planetId: "earth",
+                worldId: ["island", "skyline", "moonbase", "island", "cosmic", "harbor"][index % 6],
+                starred: index < 5,
+                level: Math.floor(Math.random() * 20) + 1,
+                genrePreference: ["Pop", "Synthwave", "Rock", "Cosmic Disco"][index % 4],
+                birthdayMonth: MONTH_NAMES[index % MONTH_NAMES.length],
+                age,
+                alive: true,
+                relationship: index % 3 === 0 ? "Close Friends" : index % 3 === 1 ? "Music Crew" : "Supportive Neighbors",
+                relationshipStage: "single",
+                partnerId: null,
+                exPartners: [],
+                exFriends: [],
+                rivalId: null,
+                children: [],
+                parents: [],
+                siblings: [],
+                relationshipHistory: [],
+                job,
+                education: age < 18 ? "Schooling" : LIFE_SCHOOL_TRACKS[index % LIFE_SCHOOL_TRACKS.length],
+                health: 72 + Math.floor(Math.random() * 22),
+                stress: 18 + Math.floor(Math.random() * 42),
+                happiness: 68 + Math.floor(Math.random() * 24),
+                mood: 68 + Math.floor(Math.random() * 24),
+                income: 18000 + Math.floor(Math.random() * 42000),
+                careerLevel: 1 + Math.floor(Math.random() * 4),
+                careerTitle: job,
+                schoolLevel: age < 18 ? 1 : 4,
+                lifeStage,
+                retirementAge: 65,
+                retired: false,
+                milestones: [],
+                genetics: {
+                    hair: traits.hair,
+                    eyes: traits.eyes,
+                    voice: traits.voice,
+                    skin: GENE_PALETTES.skin[index % GENE_PALETTES.skin.length],
+                    height: GENE_PALETTES.height[index % GENE_PALETTES.height.length],
+                    build: GENE_PALETTES.build[index % GENE_PALETTES.build.length],
+                    trait: dominantGene,
+                    dominantGene,
+                    eyeShape: ["Round", "Almond", "Wide", "Soft"][index % 4],
+                    smile: ["Bright", "Gentle", "Warm", "Expressive"][index % 4]
+                },
+                friendship: 55 + (index * 7) % 40,
+                lastLifeEvent: "A new chapter begins on Tomodachi Island."
+            };
+        });
 
         // -------------------------------------------------------------
         // 2. PLANET & COLONIZATION DATA (Milestone-based Unlock System)
@@ -588,10 +747,19 @@
             }
         ];
 
+        const WORLDS = [
+            { id: 'island', name: 'Tomodachi Island', description: 'Beachside neighborhoods and music-filled streets.', unlocked: true, vibe: 'Sunny', tint: 'from-emerald-500/20 to-cyan-500/20', tag: 'Main World' },
+            { id: 'skyline', name: 'Skyline Heights', description: 'A high-rise city full of concerts and nightlife.', unlocked: true, vibe: 'Neon', tint: 'from-indigo-500/20 to-violet-500/20', tag: 'Urban' },
+            { id: 'harbor', name: 'Harbor Lights', description: 'A dockside district full of nightlife and studios.', unlocked: false, vibe: 'Coastal', tint: 'from-cyan-500/20 to-blue-500/20', tag: 'Unlock: $1.2M' },
+            { id: 'moonbase', name: 'Moonbase Echo', description: 'A quiet lunar outpost for futuristic gatherings.', unlocked: false, vibe: 'Lunar', tint: 'from-slate-500/20 to-indigo-400/20', tag: 'Unlock: 4 hits' },
+            { id: 'cosmic', name: 'Cosmic Dome', description: 'Glowing domes, space parties, and award shows.', unlocked: false, vibe: 'Cosmic', tint: 'from-fuchsia-500/20 to-violet-500/20', tag: 'Unlock: 5 awards' }
+        ];
+
         // Global Game State
         let gameState = {
             activeTab: 'weather',
             activePlanetId: 'earth',
+            currentWorldId: 'island',
             netWorth: 1450000,
             billboardHits: 5,
             awardsCount: 6,
@@ -599,6 +767,18 @@
             townMood: 82,
             townPopulation: 54,
             weeklyIncome: 240000,
+            worldStories: [
+                { worldId: 'island', text: 'The beachside neighborhood is filled with new hope after a festival evening.' },
+                { worldId: 'skyline', text: 'Skyline Heights is buzzing with fresh nightlife and rising creative energy.' },
+                { worldId: 'harbor', text: 'Harbor Lights is waking up with a deeper sense of possibility and ambition.' },
+                { worldId: 'moonbase', text: 'Moonbase Echo feels calm, focused, and quietly futuristic.' },
+                { worldId: 'cosmic', text: 'The cosmic domes shine brighter as the community grows more connected.' }
+            ],
+            lifeEvents: [
+                "The island is full of excitement and fresh dreams.",
+                "A new generation of collaborators is about to change everything.",
+                "The city is humming with hopeful ideas and new friendships."
+            ],
             eventLog: [
                 "Week 1: The island is buzzing with new music energy.",
                 "The beach festival is drawing crowds from every apartment block.",
@@ -641,6 +821,13 @@
                     { id: 3, title: "Studio Momentum", description: "Release a new single and keep the charts glowing.", reward: 320000, progress: 0, goal: 1, complete: false }
                 ];
             }
+            if (!gameState.lifeEvents || !Array.isArray(gameState.lifeEvents)) {
+                gameState.lifeEvents = [
+                    "The island is full of excitement and fresh dreams.",
+                    "A new generation of collaborators is about to change everything.",
+                    "The city is humming with hopeful ideas and new friendships."
+                ];
+            }
         }
 
         function updateHeaderStats() {
@@ -652,6 +839,211 @@
                 const planet = PLANETS.find(p => p.id === gameState.activePlanetId) || PLANETS[0];
                 headerPlanet.textContent = `${planet.name} • Week ${gameState.week}`;
             }
+        }
+
+        function recordLifeEvent(message) {
+            if (!message) return;
+            gameState.lifeEvents.unshift(message);
+            gameState.lifeEvents = gameState.lifeEvents.slice(0, 6);
+        }
+
+        function getConversationTopics(mii) {
+            const baseTopics = [
+                "favorite local food spots",
+                "dreams of starting a band",
+                "the best places to watch the sunset",
+                "music trends across the world",
+                "plans for a big festival night",
+                "whether the weather is improving this week",
+                "how to build a better apartment community",
+                "the future of their art and style",
+                "the best songs to play for a crowd",
+                "their favorite hobbies and routines",
+                "what kind of world they want to live in",
+                "their hopes for romance and family",
+                "their relationship with their pets or friends",
+                "what true success feels like",
+                "their most memorable school or studio memories",
+                "their latest creative idea",
+                "what they believe makes a neighborhood alive",
+                "how to make the island feel more magical",
+                "their biggest fear and biggest dream",
+                "how they want to be remembered"
+            ];
+
+            const relationshipTopics = [];
+            if (mii.partnerId) relationshipTopics.push(`their partner, ${miiData.find(p => p.id === mii.partnerId)?.name || 'their partner'}`);
+            if (mii.rivalId) relationshipTopics.push(`their rival, ${miiData.find(r => r.id === mii.rivalId)?.name || 'a rival'}`);
+            if (mii.children && mii.children.length) relationshipTopics.push(`their kids and family life`);
+            if (mii.exPartners && mii.exPartners.length) relationshipTopics.push(`their old relationships and lessons learned`);
+
+            return [...baseTopics.slice(0, 12), ...relationshipTopics, ...baseTopics.slice(12)];
+        }
+
+        function getAgeStage(age) {
+            if (age < 13) return 'child';
+            if (age < 18) return 'teen';
+            if (age < 30) return 'young adult';
+            if (age < 60) return 'adult';
+            return 'elder';
+        }
+
+        function getCareerTier(mii) {
+            const level = Number(mii.careerLevel || 1);
+            if (level <= 1) return 'Apprentice';
+            if (level <= 2) return 'Rising Talent';
+            if (level <= 4) return 'Established';
+            if (level <= 6) return 'Leader';
+            return 'Legacy Figure';
+        }
+
+        function getLegacyName(mii) {
+            if (mii.legacyName) return mii.legacyName;
+            const suffix = mii.children && mii.children.length ? ' Family' : ' Legacy';
+            return `${mii.name}${suffix}`;
+        }
+
+        function pickGeneValue(pool, fallback) {
+            return pool[Math.floor(Math.random() * pool.length)] || fallback;
+        }
+
+        function inheritGenetics(parentA, parentB) {
+            const a = parentA?.genetics || {};
+            const b = parentB?.genetics || {};
+            const mix = (key) => {
+                const choices = [a[key], b[key]].filter(Boolean);
+                return choices.length ? choices[Math.floor(Math.random() * choices.length)] : pickGeneValue(GENE_PALETTES[key] || ["Unknown"], "Unknown");
+            };
+            return {
+                hair: mix('hair'),
+                eyes: mix('eyes'),
+                voice: mix('voice'),
+                skin: mix('skin'),
+                height: mix('height'),
+                build: mix('build'),
+                trait: GENETIC_TRAITS[Math.floor(Math.random() * GENETIC_TRAITS.length)],
+                dominantGene: GENETIC_TRAITS[Math.floor(Math.random() * GENETIC_TRAITS.length)],
+                eyeShape: mix('eyeShape') || ["Round", "Almond", "Wide", "Soft"][Math.floor(Math.random() * 4)],
+                smile: mix('smile') || ["Bright", "Gentle", "Warm", "Expressive"][Math.floor(Math.random() * 4)]
+            };
+        }
+
+        function generateLifeMilestoneEvent(mii, tag = 'life') {
+            const events = {
+                life: [
+                    `${mii.name} took a meaningful step toward a bigger future.`,
+                    `${mii.name} is learning how life changes when priorities shift.`,
+                    `${mii.name} reflected on the people and moments that shaped them most.`,
+                    `${mii.name} found a new rhythm in life and felt a little wiser.`
+                ],
+                health: [
+                    `${mii.name} focused on their health and built better habits.`,
+                    `${mii.name} took time to rest and recover from a stressful stretch.`,
+                    `${mii.name} is feeling stronger after a fresh routine and better balance.`
+                ],
+                family: [
+                    `${mii.name} leaned on family and found comfort in home life.`,
+                    `${mii.name} spent more time with loved ones and deeper relationships.`,
+                    `${mii.name} made family time a priority and felt more grounded.`
+                ],
+                career: [
+                    `${mii.name} gained momentum in their career and feels more confident.`,
+                    `${mii.name} took an important professional step that could reshape their future.`,
+                    `${mii.name} is making a real impact in their work and social circle.`
+                ]
+            };
+            const pick = events[tag] || events.life;
+            return pick[Math.floor(Math.random() * pick.length)];
+        }
+
+        function updateLifeSystems() {
+            miiData.forEach(mii => {
+                if (!mii.alive) return;
+                const stage = getAgeStage(mii.age);
+                mii.lifeStage = stage;
+                mii.legacyName = getLegacyName(mii);
+                mii.careerTier = getCareerTier(mii);
+
+                if (stage === 'child' || stage === 'teen') {
+                    mii.education = stage === 'child' ? 'Childhood' : 'Schooling';
+                    mii.job = 'Student';
+                    mii.careerTitle = 'Student';
+                    mii.schoolLevel = Math.max(1, Math.min(8, (mii.schoolLevel || 1) + (Math.random() < 0.5 ? 1 : 0)));
+                    if (mii.age >= 18 && !mii.graduated) {
+                        mii.graduated = true;
+                        mii.education = 'Graduated';
+                        recordLifeEvent(`${mii.name} graduated and stepped into a new phase of adulthood.`);
+                    }
+                } else {
+                    if (!mii.job || mii.job === 'Student') {
+                        mii.job = LIFE_JOBS[Math.floor(Math.random() * LIFE_JOBS.length)];
+                    }
+                    mii.education = mii.age < 22 ? 'Career Training' : mii.age < 40 ? 'Work & Growth' : mii.age >= 65 ? 'Retirement' : 'Life Experience';
+                    mii.careerTitle = mii.job;
+                    mii.schoolLevel = Math.max(1, Math.min(12, (mii.schoolLevel || 4) + (Math.random() < 0.22 ? 1 : 0)));
+                }
+
+                if (mii.age >= 65 && !mii.retired) {
+                    mii.retired = true;
+                    mii.job = 'Retired';
+                    mii.careerTitle = 'Retired';
+                    mii.relationshipStage = 'retired';
+                    recordLifeEvent(`${mii.name} retired and began a slower, more reflective chapter of life.`);
+                }
+
+                if (mii.age >= 18 && mii.age < 35 && Math.random() < 0.12) {
+                    mii.health = Math.min(100, (mii.health || 70) + 2);
+                    mii.happiness = Math.min(100, (mii.happiness || 70) + 3);
+                    recordLifeEvent(generateLifeMilestoneEvent(mii, 'career'));
+                }
+
+                if (mii.age >= 35 && Math.random() < 0.08) {
+                    mii.stress = Math.min(100, (mii.stress || 30) + 6);
+                    mii.health = Math.max(20, (mii.health || 70) - 2);
+                    if (mii.stress > 70) {
+                        mii.happiness = Math.max(20, (mii.happiness || 70) - 4);
+                    }
+                    recordLifeEvent(generateLifeMilestoneEvent(mii, 'health'));
+                }
+
+                if ((mii.children && mii.children.length) || (mii.partnerId && Math.random() < 0.09)) {
+                    mii.happiness = Math.min(100, (mii.happiness || 70) + 4);
+                    mii.legacyName = `${mii.name} Family`;
+                    recordLifeEvent(generateLifeMilestoneEvent(mii, 'family'));
+                }
+
+                mii.health = Math.min(100, Math.max(20, (mii.health || 70) + (mii.partnerId ? 2 : 0) + (mii.children && mii.children.length ? 2 : 0) - (mii.rivalId ? 3 : 0)));
+                mii.happiness = Math.min(100, Math.max(15, (mii.happiness || 70) + (mii.partnerId ? 4 : 0) + (mii.children && mii.children.length ? 3 : 0) - (mii.exPartners && mii.exPartners.length ? 2 : 0) - (mii.rivalId ? 3 : 0)));
+                mii.mood = Math.min(100, Math.max(0, Math.round((mii.happiness + mii.health) / 2)));
+                mii.income = Math.max(12000, (mii.income || 22000) + Math.round((Math.random() * 7000) + (mii.careerLevel || 1) * 1000));
+                mii.careerLevel = typeof mii.careerLevel === 'number' ? mii.careerLevel : 1;
+                if (mii.age > 17 && stage !== 'child' && stage !== 'teen' && Math.random() < 0.14) {
+                    mii.careerLevel += 1;
+                    mii.careerTier = getCareerTier(mii);
+                    if (mii.careerLevel > 1) {
+                        mii.legacyName = `${mii.name} ${mii.careerTier}`;
+                    }
+                }
+                if (mii.age >= 18 && mii.careerLevel >= 4 && !mii.promoted) {
+                    mii.promoted = true;
+                    mii.legacyName = `${mii.name} Legacy`;
+                    recordLifeEvent(`${mii.name} earned a major promotion and became a standout figure in their field.`);
+                }
+            });
+        }
+
+        function renderLifeEvents() {
+            const list = document.getElementById('life-events-list');
+            if (!list) return;
+            list.innerHTML = gameState.lifeEvents.map((entry, index) => `
+                <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-2.5">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="w-1.5 h-1.5 rounded-full ${index % 2 === 0 ? 'bg-emerald-400' : 'bg-indigo-400'}"></span>
+                        <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Life Event</span>
+                    </div>
+                    <p class="text-[11px] text-slate-200 leading-relaxed">${entry}</p>
+                </div>
+            `).join('');
         }
 
         function renderLifeOverview() {
@@ -693,6 +1085,85 @@
                     `;
                 }).join('');
             }
+
+            const lifeStatus = document.getElementById('life-system-status');
+            if (lifeStatus) {
+                const featured = [...miiData].filter(mii => mii.alive).slice(0, 4);
+                lifeStatus.innerHTML = featured.map(mii => {
+                    const stage = mii.lifeStage || getAgeStage(mii.age);
+                    return `
+                        <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-2.5">
+                            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">${mii.name}</div>
+                            <div class="mt-1 text-[11px] text-slate-200 font-semibold">${mii.job || 'Student'}</div>
+                            <div class="mt-1 text-[9px] text-indigo-300">${mii.education || 'Learning'} • ${stage}</div>
+                            <div class="mt-2 flex justify-between text-[9px] text-slate-300">
+                                <span>HP ${mii.health || 80}</span>
+                                <span>Joy ${mii.happiness || 70}</span>
+                            </div>
+                            <div class="mt-1 text-[9px] text-emerald-300">Fam ${mii.children?.length || 0} • ${mii.relationshipStage}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const geneticsOverview = document.getElementById('genetics-overview');
+            if (geneticsOverview) {
+                const featured = [...miiData].filter(mii => mii.alive).slice(0, 3);
+                geneticsOverview.innerHTML = featured.map(mii => {
+                    const g = mii.genetics || {};
+                    return `
+                        <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-2.5">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">${mii.name}</div>
+                                <div class="text-[9px] text-pink-300 font-semibold">${g.trait || 'dreamer'}</div>
+                            </div>
+                            <div class="mt-1 text-[10px] text-slate-300">${g.hair || 'Brown'} hair • ${g.eyes || 'Hazel'} eyes • ${g.skin || 'Warm Tan'} skin</div>
+                            <div class="mt-1 text-[9px] text-slate-400">Fam: ${mii.children?.length || 0} child(ren) • ${mii.parents?.length || 0} ancestry links</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const familyTreeOverview = document.getElementById('family-tree-overview');
+            if (familyTreeOverview) {
+                const featured = [...miiData].filter(mii => mii.alive).slice(0, 3);
+                familyTreeOverview.innerHTML = featured.map(mii => {
+                    const parentNames = (mii.parents || []).map(id => miiData.find(p => p.id === id)?.name).filter(Boolean).slice(0, 2);
+                    const childNames = (mii.children || []).map(id => miiData.find(c => c.id === id)?.name).filter(Boolean).slice(0, 2);
+                    return `
+                        <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-2.5">
+                            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">${mii.name}</div>
+                            <div class="mt-1 text-[10px] text-slate-300">Legacy: ${getLegacyName(mii)}</div>
+                            <div class="mt-1 text-[9px] text-slate-400">Parents: ${parentNames.length ? parentNames.join(', ') : 'Unknown'}
+                            </div>
+                            <div class="mt-1 text-[9px] text-slate-400">Children: ${childNames.length ? childNames.join(', ') : 'No listed children'}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const careerLadderOverview = document.getElementById('career-ladder-overview');
+            if (careerLadderOverview) {
+                const featured = [...miiData].filter(mii => mii.alive).slice(0, 3);
+                careerLadderOverview.innerHTML = featured.map(mii => {
+                    const tier = mii.careerTier || getCareerTier(mii);
+                    return `
+                        <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-2.5">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">${mii.name}</div>
+                                <div class="text-[9px] text-indigo-300 font-semibold">${tier}</div>
+                            </div>
+                            <div class="mt-1 text-[10px] text-slate-300">${mii.job || 'Student'} • Lv ${mii.careerLevel || 1}</div>
+                            <div class="mt-2 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                                <div class="h-full rounded-full bg-gradient-to-r from-indigo-500 to-emerald-500" style="width: ${Math.min(100, (Number(mii.careerLevel || 1) / 6) * 100)}%"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            renderLifeEvents();
+            renderWorldStories();
         }
 
         function renderWeekPanel() {
@@ -722,6 +1193,367 @@
             if (eventBadge) {
                 eventBadge.textContent = gameState.townMood >= 80 ? 'Island Pulse' : 'Rising Energy';
             }
+
+            const currentWorldLabel = document.getElementById('current-world-label');
+            if (currentWorldLabel) {
+                const activeWorld = WORLDS.find(w => w.id === gameState.currentWorldId) || WORLDS[0];
+                currentWorldLabel.textContent = activeWorld.name;
+            }
+        }
+
+        function renderWorldTravelSection() {
+            const list = document.getElementById('world-travel-list');
+            if (!list) return;
+
+            list.innerHTML = WORLDS.map(world => {
+                const isActive = world.id === gameState.currentWorldId;
+                const residentCount = miiData.filter(m => m.worldId === world.id).length;
+                return `
+                    <button onclick="travelToWorld('${world.id}')" class="w-full text-left rounded-xl border ${isActive ? 'border-indigo-500 bg-indigo-500/10' : 'border-slate-800 bg-slate-900/80'} p-2.5 transition-all ${world.unlocked ? 'hover:border-indigo-400' : 'opacity-60'}">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-[10px] uppercase tracking-wider ${world.unlocked ? 'text-indigo-300' : 'text-amber-300'} font-bold">${world.tag}</div>
+                                <div class="text-sm font-black text-slate-100 mt-1">${world.name}</div>
+                            </div>
+                            <div class="text-[9px] font-bold ${isActive ? 'text-emerald-300' : 'text-slate-400'}">${residentCount} Miis</div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">${world.description}</p>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function renderWorld3DModal() {
+            const currentWorld = WORLDS.find(w => w.id === gameState.currentWorldId) || WORLDS[0];
+            const label = document.getElementById('world-3d-current-name');
+            if (label) label.textContent = currentWorld.name;
+
+            const list = document.getElementById('world-3d-mii-list');
+            if (list) {
+                const nearby = miiData.filter(m => m.worldId === gameState.currentWorldId).slice(0, 4);
+                list.innerHTML = nearby.map(mii => `
+                    <button onclick="talkToMii(${mii.id})" class="w-full flex items-center justify-between gap-2 rounded-xl bg-slate-900/80 border border-slate-800 px-2.5 py-2 text-left hover:border-indigo-500">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-500 to-pink-500 flex items-center justify-center font-black text-white text-[10px]">${mii.name.substring(0, 2)}</div>
+                            <div>
+                                <div class="text-[11px] font-bold text-slate-100">${mii.name}</div>
+                                <div class="text-[9px] text-slate-400">${mii.relationship}</div>
+                            </div>
+                        </div>
+                        <span class="text-[9px] text-emerald-300">Talk</span>
+                    </button>
+                `).join('');
+            }
+        }
+
+        function talkToMii(miiId) {
+            const mii = miiData.find(item => item.id === miiId);
+            if (!mii || !mii.alive) return;
+
+            const topics = getConversationTopics(mii);
+            const chosenTopic = topics[Math.floor(Math.random() * topics.length)];
+            const partnerName = mii.partnerId ? (miiData.find(p => p.id === mii.partnerId)?.name || 'their partner') : null;
+            const rivalName = mii.rivalId ? (miiData.find(r => r.id === mii.rivalId)?.name || 'their rival') : null;
+            const partnerPhrase = partnerName ? `I keep comparing my life choices with ${partnerName}.` : 'I keep thinking about my future.';
+            const rivalPhrase = rivalName ? `I still think about ${rivalName} when I talk about ${chosenTopic}.` : 'There are still some rivalries I can’t ignore.';
+            const lines = [
+                `${mii.name}: "I keep thinking about ${chosenTopic}. It feels like the kind of thing that changes a whole season."`,
+                `${mii.name}: "I was just talking about ${chosenTopic}. Honestly, it makes me feel more alive."`,
+                `${mii.name}: "If we ever made a song about ${chosenTopic}, it would be huge."`,
+                `${mii.name}: "Lately, I've been thinking a lot about ${chosenTopic}. It feels surprisingly important."`,
+                `${mii.name}: "I want to tell you about ${chosenTopic}. It really says a lot about who I am."`,
+                `${mii.name}: "${partnerPhrase} ${chosenTopic} is more complicated than it sounds."`,
+                `${mii.name}: "${rivalPhrase}"`
+            ];
+            const response = lines[Math.floor(Math.random() * lines.length)];
+            const output = document.getElementById('world-chat-output');
+            if (output) output.textContent = response;
+
+            mii.friendship = Math.min(100, mii.friendship + 8);
+            if (mii.rivalId) mii.friendship = Math.max(0, mii.friendship - 2);
+            gameState.townMood = Math.min(100, gameState.townMood + 2);
+            gameState.eventLog.unshift(`${mii.name} stopped by for a quick chat in ${WORLDS.find(w => w.id === gameState.currentWorldId)?.name || 'the world'}.`);
+            gameState.eventLog = gameState.eventLog.slice(0, 5);
+            recordLifeEvent(`${mii.name} had a meaningful conversation about ${chosenTopic} and reflected on how life is changing.`);
+            renderWeekPanel();
+            renderLifeOverview();
+            renderWorld3DModal();
+        }
+
+        function openWorld3DModal() {
+            renderWorld3DModal();
+            document.getElementById('world-3d-modal').classList.remove('hidden');
+        }
+
+        function closeWorld3DModal() {
+            document.getElementById('world-3d-modal').classList.add('hidden');
+        }
+
+        function travelToWorld(worldId) {
+            const world = WORLDS.find(item => item.id === worldId);
+            if (!world || !world.unlocked) return;
+
+            gameState.currentWorldId = worldId;
+            gameState.eventLog.unshift(`You traveled to ${world.name} and explored the local neighborhood.`);
+            gameState.eventLog = gameState.eventLog.slice(0, 5);
+            refreshWorldStoryEvent();
+            renderWorldTravelSection();
+            renderWorld3DModal();
+            renderWeekPanel();
+        }
+
+        function findSuitablePartner(mii) {
+            const living = miiData.filter(other => other.id !== mii.id && other.alive && other.age >= 18 && !other.partnerId && other.worldId === mii.worldId);
+            if (!living.length) return null;
+            living.sort((a, b) => b.friendship - a.friendship);
+            return living[0];
+        }
+
+        function createChildForCouple(parentA, parentB) {
+            const childNamePool = ["Airi", "Noa", "Iris", "Milo", "Lena", "Ren", "Kiko", "Eon", "Sora", "Vera", "Toma", "Yuna"];
+            const childName = childNamePool[Math.floor(Math.random() * childNamePool.length)];
+            const geneticsA = parentA.genetics;
+            const geneticsB = parentB.genetics;
+            const inheritedGenes = inheritGenetics(parentA, parentB);
+            const child = {
+                id: Date.now() + Math.floor(Math.random() * 10000),
+                name: childName,
+                planetId: parentA.planetId,
+                worldId: parentA.worldId,
+                starred: false,
+                level: 1,
+                genrePreference: ["Pop", "Synthwave", "Rock", "Cosmic Disco"][Math.floor(Math.random() * 4)],
+                birthdayMonth: MONTH_NAMES[Math.floor(Math.random() * MONTH_NAMES.length)],
+                age: 0,
+                alive: true,
+                relationship: "Young Dreamer",
+                relationshipStage: "child",
+                partnerId: null,
+                exPartners: [],
+                exFriends: [],
+                rivalId: null,
+                children: [],
+                parents: [parentA.id, parentB.id],
+                siblings: [],
+                relationshipHistory: [],
+                job: "Student",
+                education: "Childhood",
+                health: 86,
+                stress: 12,
+                happiness: 82,
+                mood: 82,
+                income: 0,
+                careerLevel: 1,
+                careerTitle: "Student",
+                schoolLevel: 1,
+                lifeStage: "child",
+                retirementAge: 65,
+                retired: false,
+                milestones: ["Born into a loving family."],
+                genetics: {
+                    hair: inheritedGenes.hair,
+                    eyes: inheritedGenes.eyes,
+                    voice: inheritedGenes.voice,
+                    skin: inheritedGenes.skin,
+                    height: inheritedGenes.height,
+                    build: inheritedGenes.build,
+                    trait: inheritedGenes.trait,
+                    dominantGene: inheritedGenes.dominantGene,
+                    eyeShape: inheritedGenes.eyeShape,
+                    smile: inheritedGenes.smile
+                },
+                friendship: 20,
+                lastLifeEvent: "A child was born, bringing new hope to the family."
+            };
+
+            parentA.children.push(child.id);
+            parentB.children.push(child.id);
+            parentA.relationshipHistory = [...new Set([...(parentA.relationshipHistory || []), `Parent of ${child.name}.`])];
+            parentB.relationshipHistory = [...new Set([...(parentB.relationshipHistory || []), `Parent of ${child.name}.`])];
+            miiData.push(child);
+            return child;
+        }
+
+        function processLifeSimEvents() {
+            const livingMiis = miiData.filter(mii => mii.alive);
+            for (const mii of livingMiis) {
+                if (mii.age > 90 && Math.random() < 0.03) {
+                    mii.alive = false;
+                    mii.relationshipStage = 'passed away';
+                    if (mii.partnerId) {
+                        const partner = miiData.find(p => p.id === mii.partnerId);
+                        if (partner) {
+                            partner.partnerId = null;
+                            partner.relationshipStage = 'single';
+                            partner.lastLifeEvent = `${mii.name} passed away, leaving a deep mark on their life.`;
+                        }
+                    }
+                    recordLifeEvent(`${mii.name} reached the end of their life after a long and full journey.`);
+                    continue;
+                }
+
+                if (mii.age >= 18 && mii.age < 25 && Math.random() < 0.05) {
+                    const milestone = ['graduated', 'moved out', 'started a new chapter', 'made a difficult life decision'][Math.floor(Math.random() * 4)];
+                    mii.milestones = [...new Set([...(mii.milestones || []), milestone])];
+                    mii.relationshipHistory = [...new Set([...(mii.relationshipHistory || []), `A major life change: ${milestone}.`])];
+                    recordLifeEvent(`${mii.name} entered a big life chapter and made an important transition: ${milestone}.`);
+                }
+
+                if (mii.age >= 18 && Math.random() < 0.04) {
+                    const geneShift = ["hair", "eyes", "voice", "smile", "build", "height"][Math.floor(Math.random() * 6)];
+                    const pool = GENE_PALETTES[geneShift] || ["Unknown"];
+                    const newValue = pool[Math.floor(Math.random() * pool.length)];
+                    if (newValue) {
+                        mii.genetics[geneShift] = newValue;
+                        mii.milestones = [...new Set([...(mii.milestones || []), `Gene shift: ${geneShift}`])];
+                    }
+                }
+
+                if (mii.age >= 30 && Math.random() < 0.05) {
+                    mii.stress = Math.min(100, (mii.stress || 30) + 8);
+                    mii.health = Math.max(20, (mii.health || 70) - 1);
+                    recordLifeEvent(`${mii.name} faced a demanding stretch of responsibilities and had to rethink their routine.`);
+                }
+
+                if (mii.age > 17 && mii.relationshipStage !== 'child' && Math.random() < 0.08) {
+                    if (mii.relationshipStage === 'single' && !mii.partnerId) {
+                        const partner = findSuitablePartner(mii);
+                        if (partner) {
+                            mii.partnerId = partner.id;
+                            partner.partnerId = mii.id;
+                            mii.relationshipStage = 'dating';
+                            partner.relationshipStage = 'dating';
+                            mii.relationshipHistory = [...new Set([...(mii.relationshipHistory || []), `Started dating ${partner.name}.`])];
+                            partner.relationshipHistory = [...new Set([...(partner.relationshipHistory || []), `Started dating ${mii.name}.`])];
+                            recordLifeEvent(`${mii.name} and ${partner.name} started dating and became a new couple.`);
+                        }
+                    } else if (mii.relationshipStage === 'dating' && mii.partnerId) {
+                        const partner = miiData.find(p => p.id === mii.partnerId);
+                        if (partner && partner.friendship > 80 && Math.random() < 0.25) {
+                            mii.relationshipStage = 'married';
+                            partner.relationshipStage = 'married';
+                            mii.relationshipHistory = [...new Set([...(mii.relationshipHistory || []), `Married ${partner.name}.`])];
+                            partner.relationshipHistory = [...new Set([...(partner.relationshipHistory || []), `Married ${mii.name}.`])];
+                            recordLifeEvent(`${mii.name} and ${partner.name} got married and built a life together.`);
+                        } else if (Math.random() < 0.15) {
+                            if (partner) {
+                                partner.partnerId = null;
+                                partner.relationshipStage = 'single';
+                                partner.exPartners = [...new Set([...(partner.exPartners || []), mii.id])];
+                                partner.relationshipHistory = [...new Set([...(partner.relationshipHistory || []), `Broke up with ${mii.name}.`])];
+                            }
+                            mii.partnerId = null;
+                            mii.relationshipStage = 'single';
+                            mii.exPartners = [...new Set([...(mii.exPartners || []), partner.id])];
+                            mii.relationshipHistory = [...new Set([...(mii.relationshipHistory || []), `Broke up with ${partner.name}.`])];
+                            recordLifeEvent(`${mii.name} and ${partner.name} broke up and went separate ways.`);
+                        }
+                    } else if (mii.relationshipStage === 'married' && mii.partnerId) {
+                        const partner = miiData.find(p => p.id === mii.partnerId);
+                        if (partner && Math.random() < 0.1) {
+                            partner.partnerId = null;
+                            partner.relationshipStage = 'single';
+                            partner.exPartners = [...new Set([...(partner.exPartners || []), mii.id])];
+                            mii.partnerId = null;
+                            mii.relationshipStage = 'divorced';
+                            mii.exPartners = [...new Set([...(mii.exPartners || []), partner.id])];
+                            mii.relationshipHistory = [...new Set([...(mii.relationshipHistory || []), `Divorced ${partner.name}.`])];
+                            partner.relationshipHistory = [...new Set([...(partner.relationshipHistory || []), `Divorced ${mii.name}.`])];
+                            recordLifeEvent(`${mii.name} and ${partner.name} divorced after a difficult chapter in their relationship.`);
+                        } else if (partner && Math.random() < 0.12 && mii.age > 22 && partner.age > 22) {
+                            const child = createChildForCouple(mii, partner);
+                            mii.relationshipHistory = [...new Set([...(mii.relationshipHistory || []), `Welcomed child ${child.name}.`])];
+                            partner.relationshipHistory = [...new Set([...(partner.relationshipHistory || []), `Welcomed child ${child.name}.`])];
+                            recordLifeEvent(`${mii.name} and ${partner.name} welcomed a new child named ${child.name}.`);
+                        }
+                    }
+                }
+
+                if (mii.age > 14 && Math.random() < 0.04 && !mii.rivalId) {
+                    const rival = livingMiis.find(other => other.id !== mii.id && other.friendship < 40 && other.age > 16 && !other.rivalId);
+                    if (rival) {
+                        mii.rivalId = rival.id;
+                        rival.rivalId = mii.id;
+                        mii.relationship = 'Rival';
+                        rival.relationship = 'Rival';
+                        mii.exFriends = [...new Set([...(mii.exFriends || []), rival.id])];
+                        rival.exFriends = [...new Set([...(rival.exFriends || []), mii.id])];
+                        recordLifeEvent(`${mii.name} and ${rival.name} became rivals after a tense competition.`);
+                    }
+                }
+
+                if (mii.rivalId && Math.random() < 0.07) {
+                    const rival = miiData.find(other => other.id === mii.rivalId);
+                    if (rival) {
+                        mii.exFriends = [...new Set([...(mii.exFriends || []), rival.id])];
+                        rival.exFriends = [...new Set([...(rival.exFriends || []), mii.id])];
+                        mii.rivalId = null;
+                        rival.rivalId = null;
+                        mii.relationship = 'Ex-Rival';
+                        rival.relationship = 'Ex-Rival';
+                        mii.relationshipHistory = [...new Set([...(mii.relationshipHistory || []), `Settled a rivalry with ${rival.name}.`])];
+                        rival.relationshipHistory = [...new Set([...(rival.relationshipHistory || []), `Settled a rivalry with ${mii.name}.`])];
+                        recordLifeEvent(`${mii.name} and ${rival.name} settled their rivalry and now share a calmer history.`);
+                    }
+                }
+
+                if (mii.age >= 17 && mii.age < 70 && Math.random() < 0.04) {
+                    const change = Math.random() < 0.5 ? 'friendship' : 'confidence';
+                    if (change === 'friendship') {
+                        mii.friendship = Math.min(100, mii.friendship + 4);
+                    } else {
+                        mii.happiness = Math.min(100, (mii.happiness || 70) + 6);
+                    }
+                    mii.relationshipHistory = [...new Set([...(mii.relationshipHistory || []), `Personal growth: ${change}.`])];
+                }
+            }
+        }
+
+        function renderWorldStories() {
+            const container = document.getElementById('world-story-feed');
+            if (!container) return;
+            const stories = gameState.worldStories || [];
+            const current = stories.filter(item => item.worldId === gameState.currentWorldId);
+            const dataset = current.length ? current : stories.slice(0, 2);
+            container.innerHTML = dataset.map(item => `
+                <div class="rounded-lg border border-slate-800 bg-slate-950/70 px-2 py-1.5">${item.text}</div>
+            `).join('');
+        }
+
+        function refreshWorldStoryEvent() {
+            const storyTemplates = {
+                island: [
+                    'The beachside community is thriving with new friendships and a brighter mood for everyone.',
+                    'A crowded festival night reminded everyone how much the island means to them.',
+                    'The neighborhood feels warmer after a week of music, laughter, and shared memories.'
+                ],
+                skyline: [
+                    'Skyline Heights is buzzing with creative energy and fresh late-night plans.',
+                    'A bold new wave of ambition is spreading through the city blocks and rooftops.',
+                    'The skyline feels more electric after a week of bold ideas and bigger dreams.'
+                ],
+                harbor: [
+                    'Harbor Lights is filling up with optimism from artists and dreamers alike.',
+                    'The docks feel alive with new opportunities and warm community energy.',
+                    'A new wave of ambition is echoing through the harbor as people chase their next chapter.'
+                ],
+                moonbase: [
+                    'Moonbase Echo feels quieter, calmer, and more focused than ever before.',
+                    'The lunar outpost seems to be settling into a thoughtful rhythm of progress.',
+                    'Fresh routines and long-term thinking are redefining life on the moonbase.'
+                ],
+                cosmic: [
+                    'The dome city glows brighter as more people find a sense of belonging in the stars.',
+                    'Cosmic Dome feels more connected and more alive with every passing week.',
+                    'A radiant energy is carrying the city forward toward bigger ideas and deeper friendships.'
+                ]
+            };
+            const currentWorld = gameState.currentWorldId || 'island';
+            const templatePool = storyTemplates[currentWorld] || storyTemplates.island;
+            const text = templatePool[Math.floor(Math.random() * templatePool.length)];
+            const item = { worldId: currentWorld, text };
+            gameState.worldStories = [item, ...gameState.worldStories.filter(entry => entry.worldId !== currentWorld)].slice(0, 5);
+            renderWorldStories();
         }
 
         function updateQuestProgress(type = 'week') {
@@ -770,7 +1602,8 @@
             const saveData = {
                 gameState,
                 miiData,
-                planets: PLANETS.map(planet => ({ ...planet }))
+                planets: PLANETS.map(planet => ({ ...planet })),
+                worlds: WORLDS.map(world => ({ ...world }))
             };
             localStorage.setItem('tomodachi-life-save', JSON.stringify(saveData));
             const eventLog = document.getElementById('weekly-event-log');
@@ -798,15 +1631,24 @@
                     if (match) Object.assign(match, savedPlanet);
                 });
             }
+            if (Array.isArray(data.worlds)) {
+                data.worlds.forEach(savedWorld => {
+                    const match = WORLDS.find(world => world.id === savedWorld.id);
+                    if (match) Object.assign(match, savedWorld);
+                });
+            }
 
             ensureLifeSystemData();
             checkPlanetUnlocks();
+            checkWorldUnlocks();
             renderPlanets();
             renderApartments();
             renderCharts();
+            renderWorldTravelSection();
             renderLifeOverview();
             renderWeekPanel();
             updateHeaderStats();
+            renderWorld3DModal();
             populateArtistSelect();
         }
 
@@ -836,21 +1678,67 @@
                 ? `Fast-forward week: ${eventTemplates[Math.floor(Math.random() * eventTemplates.length)]}`
                 : `Week ${gameState.week}: ${eventTemplates[Math.floor(Math.random() * eventTemplates.length)]}`);
             gameState.eventLog = gameState.eventLog.slice(0, 5);
+            refreshWorldStoryEvent();
 
             miiData.forEach(mii => {
                 const relationshipLift = Math.round(Math.random() * 10);
-                mii.friendship = Math.min(100, mii.friendship + relationshipLift);
-                if (mii.friendship > 80 && Math.random() > 0.7) {
-                    mii.relationship = mii.relationship.includes('Close') ? 'Besties Forever' : mii.relationship.includes('Crew') ? 'Fan Club Crew' : 'Island Power Duo';
+                if (mii.alive) {
+                    mii.friendship = Math.min(100, mii.friendship + relationshipLift);
+                    if (mii.friendship > 80 && Math.random() > 0.7) {
+                        mii.relationship = mii.relationship.includes('Close') ? 'Besties Forever' : mii.relationship.includes('Crew') ? 'Fan Club Crew' : 'Island Power Duo';
+                    }
                 }
             });
 
+            updateLifeSystems();
+            processLifeSimEvents();
             updateQuestProgress(fastForward ? 'fast' : 'week');
             randomizeStorm();
+            checkPlanetUnlocks();
+            checkWorldUnlocks();
+            renderPlanets();
+            renderCharts();
+            renderLifeOverview();
+            renderWorldTravelSection();
+            renderWorld3DModal();
+            renderWeekPanel();
+            updateHeaderStats();
+            renderApartments();
+        }
+
+        function advanceYear() {
+            const yearBoost = 52;
+            gameState.week += yearBoost;
+            gameState.netWorth += 2400000 + Math.round(Math.random() * 1800000);
+            gameState.billboardHits += 2 + Math.round(Math.random() * 3);
+            gameState.awardsCount += 2;
+            gameState.townMood = Math.min(100, gameState.townMood + 12);
+            gameState.townPopulation += 18 + Math.round(Math.random() * 24);
+            gameState.weeklyIncome = Math.round(420000 + Math.random() * 520000);
+            gameState.eventLog.unshift(`Year advanced: the island celebrates a full year of growth, new hits, and world-hopping adventures.`);
+            gameState.eventLog = gameState.eventLog.slice(0, 5);
+            refreshWorldStoryEvent();
+
+            miiData.forEach(mii => {
+                if (mii.alive) {
+                    mii.age += 1;
+                    mii.friendship = Math.min(100, mii.friendship + 14);
+                    if (mii.friendship > 80) {
+                        mii.relationship = mii.relationship.includes('Close') ? 'Besties Forever' : mii.relationship.includes('Crew') ? 'Fan Club Crew' : 'Island Power Duo';
+                    }
+                }
+            });
+
+            updateLifeSystems();
+            processLifeSimEvents();
+            updateQuestProgress('fast');
+            checkWorldUnlocks();
             checkPlanetUnlocks();
             renderPlanets();
             renderCharts();
             renderLifeOverview();
+            renderWorldTravelSection();
+            renderWorld3DModal();
             renderWeekPanel();
             updateHeaderStats();
             renderApartments();
@@ -860,6 +1748,26 @@
             advanceWeek(true);
         }
 
+        function checkWorldUnlocks() {
+            const currentNetWorth = gameState.netWorth;
+            const currentHits = gameState.billboardHits;
+            const currentAwards = gameState.awardsCount;
+
+            WORLDS.forEach(world => {
+                if (world.id === 'island' || world.id === 'skyline') {
+                    world.unlocked = true;
+                    return;
+                }
+                if (world.id === 'harbor') world.unlocked = currentNetWorth >= 1200000;
+                if (world.id === 'moonbase') world.unlocked = currentHits >= 4;
+                if (world.id === 'cosmic') world.unlocked = currentAwards >= 5;
+            });
+
+            if (!WORLDS.some(world => world.id === gameState.currentWorldId && world.unlocked)) {
+                gameState.currentWorldId = 'island';
+            }
+        }
+
         // -------------------------------------------------------------
         // 3. INITIALIZATION & LIFECYCLE
         // -------------------------------------------------------------
@@ -867,15 +1775,19 @@
             ensureLifeSystemData();
             checkPlanetUnlocks();
 
+            checkWorldUnlocks();
+
             // Render elements
             renderApartments();
             renderPlanets();
             renderCharts();
             populateArtistSelect();
             renderPresetNames();
+            renderWorldTravelSection();
             renderLifeOverview();
             renderWeekPanel();
             updateHeaderStats();
+            renderWorld3DModal();
 
             // Initialize Lucide icons
             lucide.createIcons();
@@ -972,10 +1884,10 @@
         // -------------------------------------------------------------
         function renderApartments(filterText = '') {
             const grid = document.getElementById('mii-grid');
-            const filtered = miiData.filter(m => m.name.toLowerCase().includes(filterText.toLowerCase()));
+            const filtered = miiData.filter(m => m.alive && m.name.toLowerCase().includes(filterText.toLowerCase()));
 
             grid.innerHTML = filtered.map(mii => `
-                <div class="glass-card rounded-xl p-3 border border-slate-800 flex flex-col justify-between">
+                <div class="glass-card rounded-xl p-3 border border-slate-800 flex flex-col justify-between ${mii.alive ? '' : 'opacity-40'}">
                     <div class="flex items-start justify-between">
                         <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center font-extrabold text-white text-xs">
                             ${mii.name.substring(0, 2)}
@@ -986,7 +1898,8 @@
                     </div>
                     <div class="mt-2">
                         <h4 class="text-xs font-bold text-slate-100">${mii.name}</h4>
-                        <p class="text-[10px] text-indigo-400 font-medium">Loc: ${getPlanetNameById(mii.planetId)}</p>
+                        <p class="text-[10px] text-indigo-400 font-medium">Age ${mii.age} • ${mii.relationshipStage}</p>
+                        <p class="text-[10px] text-slate-400 font-medium">Loc: ${getPlanetNameById(mii.planetId)}</p>
                     </div>
                     <button onclick="openTransferModal(${mii.id})" class="mt-2 w-full py-1 bg-slate-900 hover:bg-indigo-600 text-slate-300 hover:text-white rounded-lg text-[10px] font-bold border border-slate-800 transition-all flex items-center justify-center gap-1">
                         <i data-lucide="send" class="w-3 h-3"></i> Transfer Planet
