@@ -167,6 +167,83 @@
                     </div>
                 </div>
 
+                <!-- Week Progression & Sim Controls -->
+                <div class="glass-card rounded-2xl p-4 border border-slate-700/60 shadow-xl mt-4">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider mb-1">
+                                <i data-lucide="calendar-days" class="w-3 h-3 mr-1"></i> Island Timeline
+                            </span>
+                            <h3 class="text-lg font-black text-slate-100">Tomodachi Life Cycle</h3>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] text-slate-400 uppercase tracking-wider">Current Week</p>
+                            <p id="current-week-label" class="text-lg font-extrabold text-indigo-300">Week 1</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 mt-3">
+                        <div class="rounded-xl bg-slate-900/80 p-2 border border-slate-800">
+                            <p class="text-[10px] uppercase text-slate-400">Mood</p>
+                            <p id="town-mood-value" class="text-sm font-black text-emerald-400">82%</p>
+                        </div>
+                        <div class="rounded-xl bg-slate-900/80 p-2 border border-slate-800">
+                            <p class="text-[10px] uppercase text-slate-400">Residents</p>
+                            <p id="town-population-value" class="text-sm font-black text-cyan-400">54</p>
+                        </div>
+                        <div class="rounded-xl bg-slate-900/80 p-2 border border-slate-800">
+                            <p class="text-[10px] uppercase text-slate-400">Income</p>
+                            <p id="weekly-income-value" class="text-sm font-black text-indigo-400">$240K</p>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 mt-3">
+                        <button onclick="advanceWeek()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md">
+                            Advance 1 Week
+                        </button>
+                        <button onclick="fastForwardWeek()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md">
+                            Fast Forward 1 Week
+                        </button>
+                    </div>
+
+                    <div class="mt-3 rounded-xl bg-slate-900/80 border border-slate-800 p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Weekly Event Log</p>
+                            <span id="current-event-badge" class="px-1.5 py-0.5 rounded text-[9px] font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Island Pulse</span>
+                        </div>
+                        <ul id="weekly-event-log" class="space-y-1.5 text-[11px] text-slate-300"></ul>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-4 border border-slate-700/60 shadow-xl mt-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-base font-black text-slate-100">Life Sim Overview</h3>
+                        <div class="flex gap-2">
+                            <button onclick="saveGame()" class="px-2.5 py-1.5 bg-emerald-600/80 hover:bg-emerald-500 text-white rounded-lg text-[10px] font-bold">Save</button>
+                            <button onclick="loadGame()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-[10px] font-bold">Load</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-2">
+                            <p class="text-[10px] uppercase text-slate-400">Birthday Star</p>
+                            <p id="birthday-spotlight" class="text-sm font-black text-amber-300">Oire</p>
+                        </div>
+                        <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-2">
+                            <p class="text-[10px] uppercase text-slate-400">Best Pairing</p>
+                            <p id="relationship-spotlight" class="text-sm font-black text-pink-300">Culpa + Oire</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Quest Board</p>
+                            <span class="text-[9px] text-indigo-300 font-medium">Live Objectives</span>
+                        </div>
+                        <div id="quest-board" class="space-y-2"></div>
+                    </div>
+                </div>
+
                 <!-- Tomodachi Storm Scale Reference Guide -->
                 <div class="mt-4 pt-3 border-t border-slate-800">
                     <h3 class="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1">
@@ -438,13 +515,17 @@
         ];
 
         // Mii State Tracking
+        const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         let miiData = LORE_MIIS.map((name, index) => ({
             id: index + 1,
             name: name,
             planetId: "earth",
             starred: index < 5,
             level: Math.floor(Math.random() * 20) + 1,
-            genrePreference: ["Pop", "Synthwave", "Rock", "Cosmic Disco"][index % 4]
+            genrePreference: ["Pop", "Synthwave", "Rock", "Cosmic Disco"][index % 4],
+            birthdayMonth: MONTH_NAMES[index % MONTH_NAMES.length],
+            relationship: index % 3 === 0 ? "Close Friends" : index % 3 === 1 ? "Music Crew" : "Supportive Neighbors",
+            friendship: 55 + (index * 7) % 40
         }));
 
         // -------------------------------------------------------------
@@ -514,6 +595,20 @@
             netWorth: 1450000,
             billboardHits: 5,
             awardsCount: 6,
+            week: 1,
+            townMood: 82,
+            townPopulation: 54,
+            weeklyIncome: 240000,
+            eventLog: [
+                "Week 1: The island is buzzing with new music energy.",
+                "The beach festival is drawing crowds from every apartment block.",
+                "The studio has a fresh wave of hit ideas from the Miis."
+            ],
+            quests: [
+                { id: 1, title: "Beach Festival", description: "Host a community music night for all residents.", reward: 150000, progress: 0, goal: 1, complete: false },
+                { id: 2, title: "Mii Relationships", description: "Improve neighbor friendships and collaboration energy.", reward: 220000, progress: 0, goal: 2, complete: false },
+                { id: 3, title: "Studio Momentum", description: "Release a new single and keep the charts glowing.", reward: 320000, progress: 0, goal: 1, complete: false }
+            ],
             currentStorm: {
                 name: "Oire",
                 category: 4,
@@ -532,14 +627,244 @@
             selectedMiiForTransfer: null
         };
 
-        // Preset Storm Names
         const PRESET_STORM_NAMES = ["Oire", "Culpa", "Saile", "Zephyr", "Vortex Prime", "Hyper-Zena", "Katrina X"];
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
+        }
+
+        function ensureLifeSystemData() {
+            if (!gameState.quests || !Array.isArray(gameState.quests)) {
+                gameState.quests = [
+                    { id: 1, title: "Beach Festival", description: "Host a community music night for all residents.", reward: 150000, progress: 0, goal: 1, complete: false },
+                    { id: 2, title: "Mii Relationships", description: "Improve neighbor friendships and collaboration energy.", reward: 220000, progress: 0, goal: 2, complete: false },
+                    { id: 3, title: "Studio Momentum", description: "Release a new single and keep the charts glowing.", reward: 320000, progress: 0, goal: 1, complete: false }
+                ];
+            }
+        }
+
+        function updateHeaderStats() {
+            const headerNetWorth = document.getElementById('header-networth');
+            if (headerNetWorth) headerNetWorth.textContent = formatCurrency(gameState.netWorth);
+
+            const headerPlanet = document.getElementById('header-planet-name');
+            if (headerPlanet) {
+                const planet = PLANETS.find(p => p.id === gameState.activePlanetId) || PLANETS[0];
+                headerPlanet.textContent = `${planet.name} • Week ${gameState.week}`;
+            }
+        }
+
+        function renderLifeOverview() {
+            const birthdaySpotlight = document.getElementById('birthday-spotlight');
+            if (birthdaySpotlight) {
+                const birthdayMii = [...miiData].sort((a, b) => MONTH_NAMES.indexOf(a.birthdayMonth) - MONTH_NAMES.indexOf(b.birthdayMonth))[0];
+                birthdaySpotlight.textContent = birthdayMii ? `${birthdayMii.name} (${birthdayMii.birthdayMonth})` : 'No birthdays';
+            }
+
+            const relationshipSpotlight = document.getElementById('relationship-spotlight');
+            if (relationshipSpotlight) {
+                const pair = miiData.filter(m => m.relationship.includes('Friends') || m.relationship.includes('Crew')).slice(0, 2);
+                relationshipSpotlight.textContent = pair.length >= 2 ? `${pair[0].name} + ${pair[1].name}` : 'Culpa + Oire';
+            }
+
+            const questBoard = document.getElementById('quest-board');
+            if (questBoard) {
+                questBoard.innerHTML = gameState.quests.map(quest => {
+                    const percent = Math.min(100, Math.round((quest.progress / quest.goal) * 100));
+                    return `
+                        <div class="rounded-xl bg-slate-900/80 border border-slate-800 p-2.5">
+                            <div class="flex items-center justify-between gap-2">
+                                <div>
+                                    <p class="text-xs font-bold text-slate-100">${quest.title}</p>
+                                    <p class="text-[10px] text-slate-400">${quest.description}</p>
+                                </div>
+                                <button onclick="completeQuest(${quest.id})" class="px-2 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-[9px] font-bold text-white ${quest.complete ? 'opacity-50 cursor-not-allowed' : ''}" ${quest.complete ? 'disabled' : ''}>
+                                    ${quest.complete ? 'Done' : 'Claim'}
+                                </button>
+                            </div>
+                            <div class="mt-2 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                                <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-indigo-500" style="width: ${percent}%"></div>
+                            </div>
+                            <div class="mt-1 text-[9px] text-slate-400 flex justify-between">
+                                <span>${quest.progress}/${quest.goal}</span>
+                                <span>+${formatCurrency(quest.reward)}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        function renderWeekPanel() {
+            const weekLabel = document.getElementById('current-week-label');
+            if (weekLabel) weekLabel.textContent = `Week ${gameState.week}`;
+
+            const mood = document.getElementById('town-mood-value');
+            if (mood) mood.textContent = `${Math.min(100, Math.max(0, gameState.townMood))}%`;
+
+            const population = document.getElementById('town-population-value');
+            if (population) population.textContent = `${gameState.townPopulation}`;
+
+            const income = document.getElementById('weekly-income-value');
+            if (income) income.textContent = `$${Math.round(gameState.weeklyIncome / 1000)}K`;
+
+            const eventLog = document.getElementById('weekly-event-log');
+            if (eventLog) {
+                eventLog.innerHTML = gameState.eventLog.slice(0, 3).map(entry => `
+                    <li class="flex gap-2 items-start">
+                        <span class="mt-1 w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
+                        <span>${entry}</span>
+                    </li>
+                `).join('');
+            }
+
+            const eventBadge = document.getElementById('current-event-badge');
+            if (eventBadge) {
+                eventBadge.textContent = gameState.townMood >= 80 ? 'Island Pulse' : 'Rising Energy';
+            }
+        }
+
+        function updateQuestProgress(type = 'week') {
+            if (!gameState.quests) return;
+
+            gameState.quests = gameState.quests.map(quest => {
+                if (quest.complete) return quest;
+                if (quest.id === 1) {
+                    quest.progress = Math.min(quest.goal, quest.progress + (type === 'fast' ? 2 : 1));
+                    if (quest.progress >= quest.goal) {
+                        quest.complete = true;
+                        gameState.netWorth += quest.reward;
+                    }
+                }
+                if (quest.id === 2) {
+                    const relationshipBoost = type === 'fast' ? 2 : 1;
+                    quest.progress = Math.min(quest.goal, quest.progress + relationshipBoost);
+                    if (quest.progress >= quest.goal) {
+                        quest.complete = true;
+                        gameState.netWorth += quest.reward;
+                    }
+                }
+                if (quest.id === 3) {
+                    const chartBoost = type === 'fast' ? 2 : 1;
+                    quest.progress = Math.min(quest.goal, quest.progress + chartBoost);
+                    if (quest.progress >= quest.goal) {
+                        quest.complete = true;
+                        gameState.netWorth += quest.reward;
+                    }
+                }
+                return quest;
+            });
+        }
+
+        function completeQuest(questId) {
+            const quest = gameState.quests.find(item => item.id === questId);
+            if (!quest || quest.complete) return;
+
+            quest.complete = true;
+            gameState.netWorth += quest.reward;
+            renderLifeOverview();
+            updateHeaderStats();
+        }
+
+        function saveGame() {
+            const saveData = {
+                gameState,
+                miiData,
+                planets: PLANETS.map(planet => ({ ...planet }))
+            };
+            localStorage.setItem('tomodachi-life-save', JSON.stringify(saveData));
+            const eventLog = document.getElementById('weekly-event-log');
+            if (eventLog) {
+                eventLog.innerHTML = '<li class="flex gap-2 items-start"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-emerald-400"></span><span>Game saved successfully.</span></li>';
+            }
+        }
+
+        function loadGame() {
+            const raw = localStorage.getItem('tomodachi-life-save');
+            if (!raw) {
+                const eventLog = document.getElementById('weekly-event-log');
+                if (eventLog) {
+                    eventLog.innerHTML = '<li class="flex gap-2 items-start"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-amber-400"></span><span>No save file found yet.</span></li>';
+                }
+                return;
+            }
+
+            const data = JSON.parse(raw);
+            if (data.gameState) Object.assign(gameState, data.gameState);
+            if (Array.isArray(data.miiData)) miiData = data.miiData;
+            if (Array.isArray(data.planets)) {
+                data.planets.forEach(savedPlanet => {
+                    const match = PLANETS.find(planet => planet.id === savedPlanet.id);
+                    if (match) Object.assign(match, savedPlanet);
+                });
+            }
+
+            ensureLifeSystemData();
+            checkPlanetUnlocks();
+            renderPlanets();
+            renderApartments();
+            renderCharts();
+            renderLifeOverview();
+            renderWeekPanel();
+            updateHeaderStats();
+            populateArtistSelect();
+        }
+
+        function advanceWeek(fastForward = false) {
+            const weekDelta = fastForward ? 7 : 1;
+            const incomeGain = (fastForward ? 240000 : 65000) + Math.round(Math.random() * (fastForward ? 400000 : 140000));
+            const moodGain = 4 + Math.random() * (fastForward ? 12 : 8);
+            const newResidents = Math.round(Math.random() * (fastForward ? 9 : 3)) + (fastForward ? 1 : 0);
+            const hitBonus = Math.random() < (fastForward ? 0.72 : 0.42) ? 1 : 0;
+            const awardBonus = Math.random() < (fastForward ? 0.28 : 0.12) ? 1 : 0;
+            const eventTemplates = [
+                "The island hosts a new beach festival with local Miis dancing in the sunset.",
+                "A collaboration between apartment residents turns into a viral music moment.",
+                "The weather shifts and the community rallies together to keep the island thriving.",
+                "A surprise talent showcase boosts the town's energy for the next week.",
+                "Local businesses are thriving after a fresh wave of global fan interest."
+            ];
+
+            gameState.week += weekDelta;
+            gameState.netWorth += incomeGain;
+            gameState.billboardHits += hitBonus;
+            gameState.awardsCount += awardBonus;
+            gameState.townMood = Math.min(100, Math.max(35, Math.round(gameState.townMood + moodGain - (fastForward ? 3 : 1))));
+            gameState.townPopulation += newResidents;
+            gameState.weeklyIncome = Math.round(160000 + Math.random() * 420000);
+            gameState.eventLog.unshift(fastForward
+                ? `Fast-forward week: ${eventTemplates[Math.floor(Math.random() * eventTemplates.length)]}`
+                : `Week ${gameState.week}: ${eventTemplates[Math.floor(Math.random() * eventTemplates.length)]}`);
+            gameState.eventLog = gameState.eventLog.slice(0, 5);
+
+            miiData.forEach(mii => {
+                const relationshipLift = Math.round(Math.random() * 10);
+                mii.friendship = Math.min(100, mii.friendship + relationshipLift);
+                if (mii.friendship > 80 && Math.random() > 0.7) {
+                    mii.relationship = mii.relationship.includes('Close') ? 'Besties Forever' : mii.relationship.includes('Crew') ? 'Fan Club Crew' : 'Island Power Duo';
+                }
+            });
+
+            updateQuestProgress(fastForward ? 'fast' : 'week');
+            randomizeStorm();
+            checkPlanetUnlocks();
+            renderPlanets();
+            renderCharts();
+            renderLifeOverview();
+            renderWeekPanel();
+            updateHeaderStats();
+            renderApartments();
+        }
+
+        function fastForwardWeek() {
+            advanceWeek(true);
+        }
 
         // -------------------------------------------------------------
         // 3. INITIALIZATION & LIFECYCLE
         // -------------------------------------------------------------
         window.onload = function() {
-            // Check milestones unlock
+            ensureLifeSystemData();
             checkPlanetUnlocks();
 
             // Render elements
@@ -548,6 +873,9 @@
             renderCharts();
             populateArtistSelect();
             renderPresetNames();
+            renderLifeOverview();
+            renderWeekPanel();
+            updateHeaderStats();
 
             // Initialize Lucide icons
             lucide.createIcons();
