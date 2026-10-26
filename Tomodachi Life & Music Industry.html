@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tomodachi Life: Living the Dream & Music Industry</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 4px;
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        /* Pulse & Radar Animations */
+        @keyframes radar-sweep {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-radar {
+            animation: radar-sweep 4s linear infinite;
+        }
+        @keyframes hurricane-spin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        .animate-hurricane {
+            animation: hurricane-spin 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-indigo-500 selection:text-white pb-20">
+
+    <!-- TOP BAR / HEADER -->
+    <header class="sticky top-0 z-40 glass-card px-4 py-3 border-b border-slate-800/80 flex justify-between items-center shadow-lg">
+        <div class="flex items-center space-x-2">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center font-black text-white shadow-md shadow-indigo-500/20 text-lg">
+                TL
+            </div>
+            <div>
+                <h1 class="text-xs font-bold tracking-wider text-indigo-400 uppercase">Tomodachi Life</h1>
+                <p class="text-xs font-semibold text-slate-300 flex items-center gap-1">
+                    <span id="current-location-tag" class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="header-planet-name">Tomodachi Island (Earth)</span>
+                </p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <!-- Global Stats Header Badge -->
+            <div class="flex flex-col items-end text-right">
+                <span class="text-[10px] text-slate-400 font-semibold uppercase">Net Worth</span>
+                <span id="header-networth" class="text-xs font-extrabold text-emerald-400">$1,450,000</span>
+            </div>
+            <button onclick="toggleMusicPlayerModal()" class="w-8 h-8 rounded-full bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center text-indigo-300 hover:bg-indigo-600 hover:text-white transition-all">
+                <i data-lucide="music" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN VIEW CONTAINER (Samsung Galaxy S24 FE Aspect Ratio Optimized) -->
+    <main class="flex-1 max-w-md w-full mx-auto px-3 py-3 space-y-4">
+
+        <!-- TAB 1: WEATHER & HURRICANE RADAR MAP -->
+        <section id="tab-weather" class="tab-content space-y-4">
+            <!-- Active Weather Banner -->
+            <div class="glass-card rounded-2xl p-4 border border-slate-700/60 shadow-xl relative overflow-hidden">
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-wider mb-1">
+                            <i data-lucide="alert-triangle" class="w-3 h-3 mr-1"></i> Live Weather Monitor
+                        </span>
+                        <h2 class="text-xl font-black text-slate-100 flex items-center gap-2">
+                            <span id="storm-display-name">Hurricane Oire</span>
+                        </h2>
+                    </div>
+                    <button onclick="openStormNamingModal()" class="px-2.5 py-1 rounded-lg bg-indigo-600/30 hover:bg-indigo-600 border border-indigo-500/50 text-indigo-200 text-xs font-bold flex items-center gap-1 transition-all">
+                        <i data-lucide="edit-3" class="w-3 h-3"></i> Rename
+                    </button>
+                </div>
+
+                <!-- Tomodachi Storm Scale Card -->
+                <div class="bg-slate-900/80 rounded-xl p-3 border border-slate-800 space-y-2 mb-4">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <span class="text-xs text-slate-400 font-medium">Intensity Class</span>
+                        <span id="storm-category-badge" class="px-2 py-0.5 rounded text-xs font-extrabold bg-red-500/20 text-red-400 border border-red-500/40">
+                            Category 4 Severe
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center pt-1">
+                        <div class="p-2 rounded-lg bg-slate-850 border border-slate-800">
+                            <p class="text-[10px] text-slate-400 uppercase font-semibold">Max Winds</p>
+                            <p id="storm-wind-speed" class="text-sm font-black text-amber-400">145 mph</p>
+                        </div>
+                        <div class="p-2 rounded-lg bg-slate-850 border border-slate-800">
+                            <p class="text-[10px] text-slate-400 uppercase font-semibold">Pressure</p>
+                            <p id="storm-pressure" class="text-sm font-black text-cyan-400">938 mbar</p>
+                        </div>
+                        <div class="p-2 rounded-lg bg-slate-850 border border-slate-800">
+                            <p class="text-[10px] text-slate-400 uppercase font-semibold">Threat Level</p>
+                            <p id="storm-threat" class="text-sm font-black text-red-400">Extreme</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Animated Hurricane Radar Map -->
+                <div class="relative w-full h-64 bg-slate-900 rounded-xl overflow-hidden border border-slate-800 shadow-inner flex items-center justify-center">
+                    <!-- Map Grid Background -->
+                    <div class="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:16px_16px] opacity-40"></div>
+                    
+                    <!-- Planet Landmass SVG outlines -->
+                    <svg class="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 400 300">
+                        <path d="M50 100 Q 80 40, 160 80 T 250 160 T 320 220" fill="none" stroke="#64748b" stroke-width="3" stroke-dasharray="4 4" />
+                        <circle cx="120" cy="140" r="45" fill="#1e293b" stroke="#475569" stroke-width="2" />
+                        <circle cx="280" cy="100" r="35" fill="#1e293b" stroke="#475569" stroke-width="2" />
+                        <circle cx="220" cy="220" r="25" fill="#1e293b" stroke="#475569" stroke-width="2" />
+                    </svg>
+
+                    <!-- Radar Sweep Line -->
+                    <div class="absolute w-72 h-72 rounded-full border border-emerald-500/20 flex items-center justify-center">
+                        <div class="w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-400 to-emerald-500 origin-center animate-radar"></div>
+                    </div>
+
+                    <!-- Storm Visual Asset -->
+                    <div id="radar-storm-icon" class="relative z-10 flex flex-col items-center cursor-pointer group" onclick="randomizeStorm()">
+                        <div class="w-20 h-20 rounded-full border-4 border-red-500/40 bg-red-600/20 animate-hurricane flex items-center justify-center shadow-lg shadow-red-500/30">
+                            <i data-lucide="disc" class="w-10 h-10 text-red-400 animate-spin"></i>
+                        </div>
+                        <div class="mt-1 px-2 py-0.5 bg-slate-900/90 text-slate-200 text-[10px] font-extrabold rounded border border-slate-700 shadow">
+                            Eye of <span id="radar-storm-label">Oire</span>
+                        </div>
+                    </div>
+
+                    <!-- Mii Island Safe Shelters Indicator -->
+                    <div class="absolute bottom-2 left-2 px-2.5 py-1 bg-slate-900/90 rounded-lg border border-slate-700 text-[10px] text-slate-300 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Shelter Status: 54 Miis Secured
+                    </div>
+                </div>
+
+                <!-- Tomodachi Storm Scale Reference Guide -->
+                <div class="mt-4 pt-3 border-t border-slate-800">
+                    <h3 class="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1">
+                        <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-indigo-400"></i> Tomodachi Storm Scale (Cat 1 - Cat 6 Hypercane)
+                    </h3>
+                    <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+                        <div class="p-1.5 rounded bg-slate-900/60 border border-slate-800 text-slate-400">Cat 1: Tropical Gust (74-95 mph)</div>
+                        <div class="p-1.5 rounded bg-slate-900/60 border border-slate-800 text-slate-400">Cat 2: Island Breeze (96-110 mph)</div>
+                        <div class="p-1.5 rounded bg-slate-900/60 border border-slate-800 text-slate-400">Cat 3: Major Surge (111-129 mph)</div>
+                        <div class="p-1.5 rounded bg-slate-900/60 border border-slate-800 text-amber-300 font-semibold">Cat 4: Severe Temp (130-156 mph)</div>
+                        <div class="p-1.5 rounded bg-slate-900/60 border border-slate-800 text-red-400 font-bold">Cat 5: Super Typhoon (157-190 mph)</div>
+                        <div class="p-1.5 rounded bg-slate-900/60 border border-slate-800 text-purple-400 font-black">Cat 6: Hypercane Cataclysm (190+ mph)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: APARTMENTS & ALL 54 LORE MIIS ROSTER -->
+        <section id="tab-apartments" class="tab-content space-y-4 hidden">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-black text-slate-100">Mii Apartment Complex</h2>
+                    <p class="text-xs text-slate-400">54 Lore Miis Registered & Resident</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="filterMiis('all')" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-indigo-600 text-white">All (54)</button>
+                    <button onclick="filterMiis('starred')" class="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-800 text-slate-300 hover:bg-slate-700">Stars</button>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-slate-500"></i>
+                <input type="text" id="mii-search" oninput="searchMiis(this.value)" placeholder="Search lore Miis (e.g. Oire, Culpa, Saile, Zena)..." class="w-full pl-9 pr-4 py-2 bg-slate-900/90 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+            </div>
+
+            <!-- Mii Grid Container -->
+            <div id="mii-grid" class="grid grid-cols-2 gap-2.5">
+                <!-- Dynamically populated 54 lore Miis -->
+            </div>
+        </section>
+
+        <!-- TAB 3: PLANETS & MI COLONIZATION SYSTEM -->
+        <section id="tab-planets" class="tab-content space-y-4 hidden">
+            <div class="glass-card rounded-2xl p-4 border border-slate-700/60 shadow-xl space-y-3">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase">Milestone Progression</span>
+                        <h2 class="text-lg font-black text-slate-100 mt-1">Galactic Colonization Hub</h2>
+                    </div>
+                    <i data-lucide="globe" class="w-6 h-6 text-indigo-400"></i>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    Planets unlock via milestones (Net Worth, Billboard Hits, Total Population & Award Wins). Transfer Miis freely between habitats!
+                </p>
+            </div>
+
+            <!-- Planet List & Unlock Progress -->
+            <div id="planet-list" class="space-y-3">
+                <!-- Dynamically generated planets -->
+            </div>
+        </section>
+
+        <!-- TAB 4: BILLBOARD MUSIC INDUSTRY SIMULATION -->
+        <section id="tab-charts" class="tab-content space-y-4 hidden">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-black text-slate-100 flex items-center gap-2">
+                        <i data-lucide="trophy" class="w-5 h-5 text-amber-400"></i> Billboard Music Charts
+                    </h2>
+                    <p class="text-xs text-slate-400">Hot 100 Singles & Billboard 200 Albums</p>
+                </div>
+                <button onclick="openStudioModal()" class="px-3 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white rounded-xl text-xs font-bold shadow-md shadow-indigo-500/20 flex items-center gap-1">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Create Music
+                </button>
+            </div>
+
+            <!-- Chart Switcher Tabs -->
+            <div class="flex border-b border-slate-800">
+                <button onclick="switchChartTab('hot100')" id="chart-tab-hot100" class="flex-1 py-2 text-xs font-bold text-center border-b-2 border-indigo-500 text-indigo-400">Hot 100 Singles</button>
+                <button onclick="switchChartTab('bb200')" id="chart-tab-bb200" class="flex-1 py-2 text-xs font-bold text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200">Billboard 200 Albums</button>
+            </div>
+
+            <!-- Chart List Container -->
+            <div id="chart-list-container" class="space-y-2">
+                <!-- Dynamically populated chart items -->
+            </div>
+        </section>
+
+        <!-- TAB 5: IN-STUDIO CREATOR & SING ENGINE -->
+        <section id="tab-studio" class="tab-content space-y-4 hidden">
+            <div class="glass-card rounded-2xl p-4 border border-slate-700/60 shadow-xl space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                    <div>
+                        <h2 class="text-lg font-black text-slate-100 flex items-center gap-2">
+                            <i data-lucide="disc" class="w-5 h-5 text-purple-400"></i> Tomodachi Music Studio
+                        </h2>
+                        <p class="text-xs text-slate-400">Compose, Edit Lyrics & Voice Synth Sing</p>
+                    </div>
+                </div>
+
+                <!-- Song / Album Form -->
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-300 uppercase">Track / Album Title</label>
+                        <input type="text" id="song-title-input" placeholder="e.g. Oire's Stormy Nights" class="w-full mt-1 px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-300 uppercase">Lead Mii Artist</label>
+                            <select id="song-artist-select" class="w-full mt-1 px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                                <!-- Lore Miis options -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-300 uppercase">Genre</label>
+                            <select id="song-genre-select" class="w-full mt-1 px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                                <option>Pop</option>
+                                <option>Synthwave</option>
+                                <option>Hip-Hop</option>
+                                <option>Rock</option>
+                                <option>Cosmic Disco</option>
+                                <option>Hyperpop</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Lyric Editor -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-[11px] font-bold text-slate-300 uppercase">Lyrics Synth Engine</label>
+                            <span class="text-[10px] text-indigo-400 font-semibold">SpeechSynthesis Ready</span>
+                        </div>
+                        <textarea id="song-lyrics-input" rows="3" placeholder="Enter lyrics for your Mii to perform live..." class="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1">
+                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                            <input type="checkbox" id="song-explicit-check" class="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-0">
+                            Explicit Content Tag <span class="px-1.5 py-0.5 bg-red-950 text-red-400 font-black text-[9px] rounded border border-red-800">[E]</span>
+                        </label>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="grid grid-cols-2 gap-2 pt-2">
+                        <button onclick="playSongSynth()" class="py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5">
+                            <i data-lucide="play" class="w-4 h-4"></i> Preview Vocal Synth
+                        </button>
+                        <button onclick="releaseSong()" class="py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5">
+                            <i data-lucide="upload-cloud" class="w-4 h-4"></i> Release Single
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- STICKY BOTTOM NAVIGATION BAR (S24 FE Mobile Optimized Layout) -->
+    <nav class="fixed bottom-0 inset-x-0 z-50 glass-nav px-2 py-2">
+        <div class="max-w-md mx-auto grid grid-cols-5 gap-1 text-center">
+            <button onclick="switchTab('weather')" id="nav-weather" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-indigo-400 transition-all">
+                <i data-lucide="cloud-lightning" class="w-5 h-5"></i>
+                <span class="text-[10px] font-bold mt-1">Weather</span>
+            </button>
+            <button onclick="switchTab('apartments')" id="nav-apartments" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all">
+                <i data-lucide="building-2" class="w-5 h-5"></i>
+                <span class="text-[10px] font-bold mt-1">Miis (54)</span>
+            </button>
+            <button onclick="switchTab('planets')" id="nav-planets" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all">
+                <i data-lucide="rocket" class="w-5 h-5"></i>
+                <span class="text-[10px] font-bold mt-1">Planets</span>
+            </button>
+            <button onclick="switchTab('charts')" id="nav-charts" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all">
+                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                <span class="text-[10px] font-bold mt-1">Charts</span>
+            </button>
+            <button onclick="switchTab('studio')" id="nav-studio" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all">
+                <i data-lucide="mic" class="w-5 h-5"></i>
+                <span class="text-[10px] font-bold mt-1">Studio</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MODAL 1: STORM NAMING & SCALE CUSTOMIZER -->
+    <div id="storm-naming-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-card max-w-sm w-full rounded-2xl p-5 border border-slate-700 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <h3 class="text-base font-black text-slate-100 flex items-center gap-2">
+                    <i data-lucide="wind" class="w-5 h-5 text-indigo-400"></i> Name Active Storm
+                </h3>
+                <button onclick="closeStormNamingModal()" class="text-slate-400 hover:text-slate-200">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="text-[11px] font-bold text-slate-300 uppercase">Custom Storm Name</label>
+                    <input type="text" id="custom-storm-name" placeholder="Enter custom name (e.g. Superstorm Culpa)" class="w-full mt-1 px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                </div>
+                
+                <div class="space-y-1">
+                    <span class="text-[11px] font-bold text-slate-300 uppercase">Or Pick Presets</span>
+                    <div class="flex flex-wrap gap-1.5 pt-1" id="preset-name-pills">
+                        <!-- Quick name picks -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-end gap-2">
+                <button onclick="closeStormNamingModal()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="saveStormName()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md">Apply Name</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: MII PLANET TRANSFER MODAL -->
+    <div id="transfer-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-card max-w-sm w-full rounded-2xl p-5 border border-slate-700 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <h3 class="text-base font-black text-slate-100 flex items-center gap-2">
+                    <i data-lucide="navigation" class="w-5 h-5 text-indigo-400"></i> Mii Galactic Relocation
+                </h3>
+                <button onclick="closeTransferModal()" class="text-slate-400 hover:text-slate-200">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <div class="flex items-center gap-3 p-3 bg-slate-900/90 rounded-xl border border-slate-800">
+                    <div id="transfer-mii-avatar" class="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-pink-500 flex items-center justify-center font-black text-white text-sm">
+                        M
+                    </div>
+                    <div>
+                        <h4 id="transfer-mii-name" class="text-sm font-bold text-slate-100">Mii Name</h4>
+                        <p id="transfer-mii-current-planet" class="text-[10px] text-indigo-400">Current: Earth (Tomodachi Island)</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-[11px] font-bold text-slate-300 uppercase">Select Destination Planet</label>
+                    <select id="transfer-destination-select" class="w-full mt-1 px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                        <!-- Populated dynamically with unlocked planets -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-end gap-2">
+                <button onclick="closeTransferModal()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold">Cancel</button>
+                <button onclick="executeMiiTransfer()" class="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-md">Complete Transfer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APP ENGINE -->
+    <script>
+        // -------------------------------------------------------------
+        // 1. ALL 54 LORE MIIS COMPLETE ROSTER DATA
+        // -------------------------------------------------------------
+        const LORE_MIIS = [
+            "Saile", "Shirley", "Culpa", "Sarelli", "Rikahh", "Spice", "Xide", "Xyn", 
+            "Façade", "Camden", "Zaza", "Oire", "Donae", "Fifi", "Raf", "Weka", 
+            "Rena", "Tulia", "Shirlane", "Sophy", "Eiko", "Momeka", "Yuytre", "Cebuku", 
+            "Defiae", "Ethiopa", "Patricia", "Gabriella", "Seryu", "Ereco", "Luna", "Firae", 
+            "Scarlett", "Issa", "Ezra", "Ile", "Olioe", "Lindsey", "Yucca", "Augusta", 
+            "Leah Nor", "Sarome", "Depolnmie", "Lake", "Morgan", "Jolia", "Sumire", "Tai", 
+            "Faith", "Diofe", "Sarai", "Zena Joplin", "Koa", "Nomi"
+        ];
+
+        // Mii State Tracking
+        let miiData = LORE_MIIS.map((name, index) => ({
+            id: index + 1,
+            name: name,
+            planetId: "earth",
+            starred: index < 5,
+            level: Math.floor(Math.random() * 20) + 1,
+            genrePreference: ["Pop", "Synthwave", "Rock", "Cosmic Disco"][index % 4]
+        }));
+
+        // -------------------------------------------------------------
+        // 2. PLANET & COLONIZATION DATA (Milestone-based Unlock System)
+        // -------------------------------------------------------------
+        const PLANETS = [
+            {
+                id: "earth",
+                name: "Tomodachi Island (Earth)",
+                subtitle: "Original Paradise",
+                unlocked: true,
+                reqDescription: "Unlocked by default",
+                atmosphere: "Tropical & Temperate",
+                event: "Beach Music Festivals & Hurricanes",
+                icon: "globe"
+            },
+            {
+                id: "moon",
+                name: "Artemis Base (Moon)",
+                subtitle: "Lunar Outpost",
+                unlocked: false,
+                reqNetWorth: 500000,
+                reqDescription: "Net Worth $500,000 required",
+                atmosphere: "Low Gravity Vacuum",
+                event: "Zero-G Dance Parties",
+                icon: "moon"
+            },
+            {
+                id: "mars",
+                name: "New Olympus (Mars)",
+                subtitle: "Red Planet Colony",
+                unlocked: false,
+                reqHits: 3,
+                reqDescription: "3 Billboard #1 Singles required",
+                atmosphere: "Dusty Red Atmospheric Dome",
+                event: "Martian Sand Raves",
+                icon: "orbit"
+            },
+            {
+                id: "zena",
+                name: "Planet Zena (Pop Paradise)",
+                subtitle: "Music Industry Hub",
+                unlocked: false,
+                reqAwards: 5,
+                reqDescription: "5 Music Award Wins required",
+                atmosphere: "Neon Neon-Gas Glow",
+                event: "Intergalactic Music Awards",
+                icon: "sparkles"
+            },
+            {
+                id: "starlight",
+                name: "Starlight Galaxy Hub",
+                subtitle: "Cosmic Metropolis",
+                unlocked: false,
+                reqNetWorth: 2000000,
+                reqDescription: "Net Worth $2,000,000 required",
+                atmosphere: "Pure Stardust Energy",
+                event: "Universal Super Concerts",
+                icon: "star"
+            }
+        ];
+
+        // Global Game State
+        let gameState = {
+            activeTab: 'weather',
+            activePlanetId: 'earth',
+            netWorth: 1450000,
+            billboardHits: 5,
+            awardsCount: 6,
+            currentStorm: {
+                name: "Oire",
+                category: 4,
+                categoryName: "Category 4 Severe",
+                windSpeed: 145,
+                pressure: 938,
+                threat: "Extreme"
+            },
+            hot100Chart: [
+                { rank: 1, title: "Starlight Echoes", artist: "Fifi (Zena Joplin)", views: "4.2M", explicit: false },
+                { rank: 2, title: "Culpa's Cyclone", artist: "Culpa ft. Oire", views: "3.8M", explicit: true },
+                { rank: 3, title: "Lunar Sunrise", artist: "Saile", views: "3.1M", explicit: false },
+                { rank: 4, title: "Neon Zena Nights", artist: "Sarelli", views: "2.9M", explicit: false },
+                { rank: 5, title: "Rikahh Cyber Groove", artist: "Rikahh", views: "2.4M", explicit: false }
+            ],
+            selectedMiiForTransfer: null
+        };
+
+        // Preset Storm Names
+        const PRESET_STORM_NAMES = ["Oire", "Culpa", "Saile", "Zephyr", "Vortex Prime", "Hyper-Zena", "Katrina X"];
+
+        // -------------------------------------------------------------
+        // 3. INITIALIZATION & LIFECYCLE
+        // -------------------------------------------------------------
+        window.onload = function() {
+            // Check milestones unlock
+            checkPlanetUnlocks();
+
+            // Render elements
+            renderApartments();
+            renderPlanets();
+            renderCharts();
+            populateArtistSelect();
+            renderPresetNames();
+
+            // Initialize Lucide icons
+            lucide.createIcons();
+        };
+
+        // -------------------------------------------------------------
+        // 4. TAB NAVIGATION SYSTEM
+        // -------------------------------------------------------------
+        function switchTab(tabId) {
+            gameState.activeTab = tabId;
+
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+
+            // Show active tab content
+            const activeEl = document.getElementById(`tab-${tabId}`);
+            if (activeEl) activeEl.classList.remove('hidden');
+
+            // Update Navigation Button Active Styles
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-indigo-400');
+                btn.classList.add('text-slate-400');
+            });
+
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-400');
+                activeBtn.classList.add('text-indigo-400');
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 5. WEATHER & DYNAMIC HURRICANE NAMING SYSTEM
+        // -------------------------------------------------------------
+        function openStormNamingModal() {
+            document.getElementById('custom-storm-name').value = gameState.currentStorm.name;
+            document.getElementById('storm-naming-modal').classList.remove('hidden');
+        }
+
+        function closeStormNamingModal() {
+            document.getElementById('storm-naming-modal').classList.add('hidden');
+        }
+
+        function renderPresetNames() {
+            const container = document.getElementById('preset-name-pills');
+            container.innerHTML = PRESET_STORM_NAMES.map(name => `
+                <button onclick="setCustomStormInput('${name}')" class="px-2.5 py-1 bg-slate-900 border border-slate-700 hover:border-indigo-500 rounded-lg text-xs text-slate-300 font-medium">
+                    ${name}
+                </button>
+            `).join('');
+        }
+
+        function setCustomStormInput(name) {
+            document.getElementById('custom-storm-name').value = name;
+        }
+
+        function saveStormName() {
+            const newName = document.getElementById('custom-storm-name').value.trim() || "Oire";
+            gameState.currentStorm.name = newName;
+
+            // Update UI
+            document.getElementById('storm-display-name').textContent = `Hurricane ${newName}`;
+            document.getElementById('radar-storm-label').textContent = newName;
+
+            closeStormNamingModal();
+        }
+
+        function randomizeStorm() {
+            const categories = [
+                { cat: 1, name: "Category 1 Breeze", wind: 85, pres: 985, threat: "Moderate" },
+                { cat: 2, name: "Category 2 Gust", wind: 105, pres: 970, threat: "High" },
+                { cat: 3, name: "Category 3 Major Surge", wind: 125, pres: 950, threat: "Severe" },
+                { cat: 4, name: "Category 4 Severe", wind: 145, pres: 938, threat: "Extreme" },
+                { cat: 5, name: "Category 5 Super Typhoon", wind: 175, pres: 910, threat: "Catastrophic" },
+                { cat: 6, name: "Cat 6 Hypercane Cataclysm", wind: 215, pres: 870, threat: "Apocalyptic" }
+            ];
+
+            const pick = categories[Math.floor(Math.random() * categories.length)];
+            gameState.currentStorm.category = pick.cat;
+            gameState.currentStorm.categoryName = pick.name;
+            gameState.currentStorm.windSpeed = pick.wind;
+            gameState.currentStorm.pressure = pick.pres;
+            gameState.currentStorm.threat = pick.threat;
+
+            // Update Weather UI
+            document.getElementById('storm-category-badge').textContent = pick.name;
+            document.getElementById('storm-wind-speed').textContent = `${pick.wind} mph`;
+            document.getElementById('storm-pressure').textContent = `${pick.pres} mbar`;
+            document.getElementById('storm-threat').textContent = pick.threat;
+        }
+
+        // -------------------------------------------------------------
+        // 6. APARTMENTS & 54 LORE MIIS ROSTER
+        // -------------------------------------------------------------
+        function renderApartments(filterText = '') {
+            const grid = document.getElementById('mii-grid');
+            const filtered = miiData.filter(m => m.name.toLowerCase().includes(filterText.toLowerCase()));
+
+            grid.innerHTML = filtered.map(mii => `
+                <div class="glass-card rounded-xl p-3 border border-slate-800 flex flex-col justify-between">
+                    <div class="flex items-start justify-between">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center font-extrabold text-white text-xs">
+                            ${mii.name.substring(0, 2)}
+                        </div>
+                        <button onclick="toggleStarMii(${mii.id})" class="text-xs ${mii.starred ? 'text-amber-400' : 'text-slate-600'}">
+                            ★
+                        </button>
+                    </div>
+                    <div class="mt-2">
+                        <h4 class="text-xs font-bold text-slate-100">${mii.name}</h4>
+                        <p class="text-[10px] text-indigo-400 font-medium">Loc: ${getPlanetNameById(mii.planetId)}</p>
+                    </div>
+                    <button onclick="openTransferModal(${mii.id})" class="mt-2 w-full py-1 bg-slate-900 hover:bg-indigo-600 text-slate-300 hover:text-white rounded-lg text-[10px] font-bold border border-slate-800 transition-all flex items-center justify-center gap-1">
+                        <i data-lucide="send" class="w-3 h-3"></i> Transfer Planet
+                    </button>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function searchMiis(val) {
+            renderApartments(val);
+        }
+
+        function toggleStarMii(id) {
+            const mii = miiData.find(m => m.id === id);
+            if (mii) {
+                mii.starred = !mii.starred;
+                renderApartments();
+            }
+        }
+
+        function getPlanetNameById(id) {
+            const planet = PLANETS.find(p => p.id === id);
+            return planet ? planet.name.split(' ')[0] : 'Earth';
+        }
+
+        // -------------------------------------------------------------
+        // 7. MULTI-PLANET COLONIZATION & TRANSFER SYSTEM
+        // -------------------------------------------------------------
+        function checkPlanetUnlocks() {
+            PLANETS.forEach(p => {
+                if (p.id === 'earth') p.unlocked = true;
+                if (p.reqNetWorth && gameState.netWorth >= p.reqNetWorth) p.unlocked = true;
+                if (p.reqHits && gameState.billboardHits >= p.reqHits) p.unlocked = true;
+                if (p.reqAwards && gameState.awardsCount >= p.reqAwards) p.unlocked = true;
+            });
+        }
+
+        function renderPlanets() {
+            const list = document.getElementById('planet-list');
+            list.innerHTML = PLANETS.map(planet => {
+                const residentCount = miiData.filter(m => m.planetId === planet.id).length;
+                return `
+                    <div class="glass-card rounded-xl p-4 border ${planet.unlocked ? 'border-slate-700/80' : 'border-slate-800 opacity-70'} space-y-2">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-[10px] font-bold ${planet.unlocked ? 'text-emerald-400' : 'text-amber-400'} uppercase">
+                                    ${planet.unlocked ? 'Unlocked Colony' : 'Locked Milestone'}
+                                </span>
+                                <h3 class="text-base font-bold text-slate-100">${planet.name}</h3>
+                                <p class="text-xs text-slate-400">${planet.subtitle}</p>
+                            </div>
+                            <span class="px-2.5 py-1 bg-slate-900 text-indigo-300 font-extrabold text-xs rounded-lg border border-slate-800">
+                                ${residentCount} Miis
+                            </span>
+                        </div>
+                        <div class="text-[11px] text-slate-300 pt-1">
+                            <span class="font-semibold text-slate-400">Environment:</span> ${planet.atmosphere}
+                        </div>
+                        <div class="text-[11px] text-slate-300">
+                            <span class="font-semibold text-slate-400">Unique Event:</span> ${planet.event}
+                        </div>
+                        ${!planet.unlocked ? `
+                            <div class="mt-2 p-2 bg-slate-900/90 rounded-lg border border-amber-500/30 text-[10px] text-amber-300 font-bold">
+                                Lock Requirement: ${planet.reqDescription}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openTransferModal(miiId) {
+            const mii = miiData.find(m => m.id === miiId);
+            if (!mii) return;
+
+            gameState.selectedMiiForTransfer = mii;
+
+            document.getElementById('transfer-mii-name').textContent = mii.name;
+            document.getElementById('transfer-mii-avatar').textContent = mii.name.substring(0, 2);
+            document.getElementById('transfer-mii-current-planet').textContent = `Current: ${getPlanetNameById(mii.planetId)}`;
+
+            // Populate available unlocked planets
+            const select = document.getElementById('transfer-destination-select');
+            select.innerHTML = PLANETS.filter(p => p.unlocked).map(p => `
+                <option value="${p.id}">${p.name}</option>
+            `).join('');
+
+            document.getElementById('transfer-modal').classList.remove('hidden');
+        }
+
+        function closeTransferModal() {
+            document.getElementById('transfer-modal').classList.add('hidden');
+        }
+
+        function executeMiiTransfer() {
+            if (!gameState.selectedMiiForTransfer) return;
+
+            const destPlanetId = document.getElementById('transfer-destination-select').value;
+            gameState.selectedMiiForTransfer.planetId = destPlanetId;
+
+            renderApartments();
+            renderPlanets();
+            closeTransferModal();
+        }
+
+        // -------------------------------------------------------------
+        // 8. BILLBOARD MUSIC INDUSTRY SIMULATION
+        // -------------------------------------------------------------
+        function renderCharts() {
+            const container = document.getElementById('chart-list-container');
+            container.innerHTML = gameState.hot100Chart.map(song => `
+                <div class="glass-card p-3 rounded-xl border border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 text-center font-black text-sm text-indigo-400">#${song.rank}</span>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-100 flex items-center gap-1">
+                                ${song.title}
+                                ${song.explicit ? '<span class="text-[9px] bg-red-950 text-red-400 px-1 font-black rounded border border-red-800">[E]</span>' : ''}
+                            </h4>
+                            <p class="text-[10px] text-slate-400">${song.artist}</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-extrabold text-slate-300">${song.views}</span>
+                </div>
+            `).join('');
+        }
+
+        function switchChartTab(type) {
+            document.getElementById('chart-tab-hot100').className = type === 'hot100' 
+                ? "flex-1 py-2 text-xs font-bold text-center border-b-2 border-indigo-500 text-indigo-400"
+                : "flex-1 py-2 text-xs font-bold text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+
+            document.getElementById('chart-tab-bb200').className = type === 'bb200' 
+                ? "flex-1 py-2 text-xs font-bold text-center border-b-2 border-indigo-500 text-indigo-400"
+                : "flex-1 py-2 text-xs font-bold text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+        }
+
+        function populateArtistSelect() {
+            const select = document.getElementById('song-artist-select');
+            select.innerHTML = LORE_MIIS.map(name => `<option value="${name}">${name}</option>`).join('');
+        }
+
+        // -------------------------------------------------------------
+        // 9. AUDIBLE SING SONG & LYRIC SYNTHESIZER
+        // -------------------------------------------------------------
+        function playSongSynth() {
+            const lyrics = document.getElementById('song-lyrics-input').value.trim() || "La la la, Tomodachi paradise!";
+            
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Reset previous speech
+                const utterance = new SpeechSynthesisUtterance(lyrics);
+                utterance.pitch = 1.3; // Cute Mii tone pitch
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function releaseSong() {
+            const title = document.getElementById('song-title-input').value.trim() || "Untitled Track";
+            const artist = document.getElementById('song-artist-select').value;
+            const explicit = document.getElementById('song-explicit-check').checked;
+
+            const newEntry = {
+                rank: 1,
+                title: title,
+                artist: artist,
+                views: "1.0M",
+                explicit: explicit
+            };
+
+            // Shift current chart down
+            gameState.hot100Chart.unshift(newEntry);
+            gameState.hot100Chart = gameState.hot100Chart.slice(0, 100);
+            gameState.hot100Chart.forEach((item, idx) => item.rank = idx + 1);
+
+            renderCharts();
+            switchTab('charts');
+        }
+    </script>
+</body>
+</html>
