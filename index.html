@@ -57,6 +57,35 @@
         .animate-hurricane {
             animation: hurricane-spin 3s ease-in-out infinite;
         }
+        .outdoor-mii {
+            animation: outdoor-wander var(--walk-time, 12s) ease-in-out infinite alternate;
+            animation-delay: var(--walk-delay, 0s);
+        }
+        .maker-input {
+            width: 100%;
+            min-width: 0;
+            border: 1px solid #334155;
+            border-radius: 0.6rem;
+            background: #0f172a;
+            padding: 0.55rem 0.65rem;
+            color: #e2e8f0;
+            font-size: 0.75rem;
+        }
+        .maker-submit {
+            width: 100%;
+            border-radius: 0.6rem;
+            background: #047857;
+            padding: 0.6rem;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        @keyframes outdoor-wander {
+            0% { transform: translate(0, 0) rotate(-3deg); }
+            35% { transform: translate(22px, -8px) rotate(2deg); }
+            70% { transform: translate(-13px, 9px) rotate(-2deg); }
+            100% { transform: translate(12px, -3px) rotate(3deg); }
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden selection:bg-indigo-500 selection:text-white pb-20">
@@ -100,11 +129,12 @@
                         <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase tracking-wider mb-1">
                             <i data-lucide="alert-triangle" class="w-3 h-3 mr-1"></i> Live Weather Monitor
                         </span>
+                        <p id="weather-season-label" class="text-[10px] text-slate-400 mb-1">Seasonal forecast</p>
                         <h2 class="text-xl font-black text-slate-100 flex items-center gap-2">
-                            <span id="storm-display-name">Hurricane Oire</span>
+                            <span id="storm-display-name">Checking seasonal forecast...</span>
                         </h2>
                     </div>
-                    <button onclick="openStormNamingModal()" class="px-2.5 py-1 rounded-lg bg-indigo-600/30 hover:bg-indigo-600 border border-indigo-500/50 text-indigo-200 text-xs font-bold flex items-center gap-1 transition-all">
+                    <button id="storm-rename-button" onclick="openStormNamingModal()" class="px-2.5 py-1 rounded-lg bg-indigo-600/30 hover:bg-indigo-600 border border-indigo-500/50 text-indigo-200 text-xs font-bold flex items-center gap-1 transition-all">
                         <i data-lucide="edit-3" class="w-3 h-3"></i> Rename
                     </button>
                 </div>
@@ -153,11 +183,11 @@
 
                     <!-- Storm Visual Asset -->
                     <div id="radar-storm-icon" class="relative z-10 flex flex-col items-center cursor-pointer group" onclick="randomizeStorm()">
-                        <div class="w-20 h-20 rounded-full border-4 border-red-500/40 bg-red-600/20 animate-hurricane flex items-center justify-center shadow-lg shadow-red-500/30">
+                        <div id="radar-storm-visual" class="w-20 h-20 rounded-full border-4 border-red-500/40 bg-red-600/20 animate-hurricane flex items-center justify-center shadow-lg shadow-red-500/30">
                             <i data-lucide="disc" class="w-10 h-10 text-red-400 animate-spin"></i>
                         </div>
                         <div class="mt-1 px-2 py-0.5 bg-slate-900/90 text-slate-200 text-[10px] font-extrabold rounded border border-slate-700 shadow">
-                            Eye of <span id="radar-storm-label">Oire</span>
+                            <span id="radar-storm-label">Forecast</span>
                         </div>
                     </div>
 
@@ -210,6 +240,11 @@
                             Advance 1 Year
                         </button>
                     </div>
+                    <div class="mt-2 flex items-center justify-between rounded-xl bg-slate-900/80 border border-slate-800 p-2.5">
+                        <div><p class="text-[10px] uppercase text-slate-400 font-bold">Automatic simulation</p><p id="auto-run-status" class="text-[10px] text-slate-300">Paused</p></div>
+                        <button id="auto-run-button" onclick="toggleAutoRun()" class="px-3 py-1.5 bg-slate-800 hover:bg-emerald-700 text-xs font-bold rounded-lg">Start</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mt-2"><button onclick="saveGame()" class="py-2 rounded-lg bg-slate-800 text-xs font-bold hover:bg-slate-700">Save Game</button><button onclick="loadGame()" class="py-2 rounded-lg bg-slate-800 text-xs font-bold hover:bg-slate-700">Load Game</button></div>
 
                     <div class="mt-3 rounded-xl bg-slate-900/80 border border-slate-800 p-3">
                         <div class="flex items-center justify-between mb-2">
@@ -432,11 +467,16 @@
                         </div>
                     </div>
 
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="text-[11px] font-bold text-slate-300 uppercase">Melody</label><select id="song-melody-style" class="maker-input mt-1"><option>Random pop</option><option>Gentle</option><option>Bright</option><option>Dramatic</option></select></div>
+                        <div><label class="text-[11px] font-bold text-slate-300 uppercase">Tempo</label><select id="song-tempo" class="maker-input mt-1"><option value="0.24">Moderate</option><option value="0.16">Upbeat</option><option value="0.34">Ballad</option></select></div>
+                    </div>
+
                     <!-- Lyric Editor -->
                     <div>
                         <div class="flex justify-between items-center mb-1">
                             <label class="text-[11px] font-bold text-slate-300 uppercase">Lyrics Synth Engine</label>
-                            <span class="text-[10px] text-indigo-400 font-semibold">SpeechSynthesis Ready</span>
+                            <span class="text-[10px] text-indigo-400 font-semibold">Melodic Web Audio Synth</span>
                         </div>
                         <textarea id="song-lyrics-input" rows="3" placeholder="Enter lyrics for your Mii to perform live..." class="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500"></textarea>
                     </div>
@@ -457,34 +497,99 @@
                             <i data-lucide="upload-cloud" class="w-4 h-4"></i> Release Single
                         </button>
                     </div>
+                    <p id="song-performance-status" class="min-h-4 text-[10px] text-emerald-300" aria-live="polite"></p>
                 </div>
             </div>
+        </section>
+
+        <section id="tab-family" class="tab-content space-y-4 hidden">
+            <div class="glass-card rounded-2xl p-4 border border-slate-700/60">
+                <h2 class="text-lg font-black">Family Tree & Legacy</h2><p class="text-xs text-slate-400">Living connections and remembered family members</p>
+            </div>
+            <div id="family-tab-content" class="space-y-2"></div>
+        </section>
+
+        <section id="tab-school" class="tab-content space-y-4 hidden">
+            <div class="glass-card rounded-2xl p-4 border border-slate-700/60">
+                <h2 class="text-lg font-black">Schools & Milestones</h2><p class="text-xs text-slate-400">Education, attendance, progress, and graduation</p>
+            </div>
+            <div id="school-tab-content" class="space-y-2"></div>
+        </section>
+
+        <section id="tab-jobs" class="tab-content space-y-4 hidden">
+            <div class="glass-card rounded-2xl p-4 border border-slate-700/60">
+                <h2 class="text-lg font-black">Jobs & Careers</h2><p class="text-xs text-slate-400">Roles, experience, promotions, and retirement</p>
+            </div>
+            <div id="jobs-tab-content" class="space-y-2"></div>
+        </section>
+
+        <section id="tab-outdoors" class="tab-content space-y-4 hidden">
+            <div class="flex items-center justify-between"><div><h2 class="text-lg font-black">Outdoors</h2><p id="outdoor-world-label" class="text-xs text-slate-400">Neighborhood walk</p></div><button onclick="openWorld3DModal()" class="px-3 py-2 bg-emerald-700 hover:bg-emerald-600 rounded-lg text-xs font-bold">Talk</button></div>
+            <div id="outdoor-scene" class="relative h-[440px] overflow-hidden rounded-2xl border border-emerald-900/60 bg-[linear-gradient(180deg,#91c9dc_0%,#d1e8c1_45%,#789b5c_46%,#527341_100%)]">
+                <div class="absolute left-5 top-6 rounded-full bg-white/70 px-3 py-1 text-[10px] font-bold text-slate-700">Neighborhood</div>
+                <div class="absolute bottom-0 left-0 right-0 h-20 bg-emerald-950/20"></div>
+                <div id="outdoor-mii-layer" class="absolute inset-x-3 top-16 bottom-12"></div>
+            </div>
+            <div id="outdoor-activity" class="rounded-xl bg-slate-900/80 border border-slate-800 p-3 text-xs text-slate-300"></div>
+        </section>
+
+        <section id="tab-makers" class="tab-content space-y-4 hidden">
+            <div class="glass-card rounded-2xl p-4 border border-slate-700/60"><h2 class="text-lg font-black">Makers</h2><p class="text-xs text-slate-400">Create people, places, phrases, food, and keepsakes</p></div>
+            <form onsubmit="createCustomMii(event)" class="glass-card rounded-xl p-3 space-y-2">
+                <h3 class="text-sm font-bold">Mii Maker</h3>
+                <div class="grid grid-cols-2 gap-2"><input id="maker-mii-name" required maxlength="24" placeholder="Name" class="maker-input"><input id="maker-mii-age" type="number" min="0" max="110" value="18" class="maker-input" aria-label="Age"></div>
+                <div class="grid grid-cols-2 gap-2"><select id="maker-mii-trait" class="maker-input" aria-label="Personality"></select><select id="maker-mii-hair" class="maker-input" aria-label="Hair"></select><select id="maker-mii-eyes" class="maker-input" aria-label="Eyes"></select><select id="maker-mii-voice" class="maker-input" aria-label="Voice"></select><select id="maker-mii-skin" class="maker-input" aria-label="Skin"></select><select id="maker-mii-height" class="maker-input" aria-label="Height"></select><select id="maker-mii-build" class="maker-input" aria-label="Build"></select><select id="maker-mii-world" class="maker-input" aria-label="Home world"></select></div>
+                <button class="maker-submit">Add Mii</button>
+            </form>
+            <form onsubmit="createCustomItem(event)" class="glass-card rounded-xl p-3 space-y-2">
+                <h3 class="text-sm font-bold">Item Maker</h3><div class="grid grid-cols-2 gap-2"><input id="maker-item-name" required maxlength="32" placeholder="Item name" class="maker-input"><select id="maker-item-type" class="maker-input"><option>Accessory</option><option>Furniture</option><option>Toy</option><option>Instrument</option><option>Collectible</option><option>Outdoor gear</option></select></div>
+                <div class="grid grid-cols-2 gap-2"><select id="maker-item-effect" class="maker-input"><option>Comfort</option><option>Creativity</option><option>Energy</option><option>Friendship</option><option>Style</option></select><select id="maker-item-rarity" class="maker-input"><option>Common</option><option>Uncommon</option><option>Rare</option><option>One of a kind</option></select></div><button class="maker-submit">Create Item</button>
+                <select id="maker-item-recipient" class="maker-input" aria-label="Who receives this item"></select>
+            </form>
+            <form onsubmit="createCustomFood(event)" class="glass-card rounded-xl p-3 space-y-2">
+                <h3 class="text-sm font-bold">Food Maker</h3><div class="grid grid-cols-2 gap-2"><input id="maker-food-name" required maxlength="32" placeholder="Dish name" class="maker-input"><select id="maker-food-type" class="maker-input"><option>Comfort food</option><option>Snack</option><option>Seafood</option><option>Dessert</option><option>Festival dish</option><option>Plant-based</option></select></div>
+                <div class="grid grid-cols-2 gap-2"><select id="maker-food-favorite" class="maker-input"><option>Popular with everyone</option><option>Acquired taste</option><option>Local specialty</option><option>Celebration meal</option></select><select id="maker-food-quality" class="maker-input"><option>Everyday</option><option>Homemade</option><option>Restaurant quality</option><option>Festival special</option></select></div><button class="maker-submit">Create Food</button>
+                <select id="maker-food-recipient" class="maker-input" aria-label="Who receives this food"></select>
+            </form>
+            <form onsubmit="createCustomPhrase(event)" class="glass-card rounded-xl p-3 space-y-2">
+                <h3 class="text-sm font-bold">Phrase Maker</h3><input id="maker-phrase-text" required maxlength="100" placeholder="A saying or conversation starter" class="maker-input"><select id="maker-phrase-category" class="maker-input"><option>Greeting</option><option>Friendship</option><option>Romance</option><option>Dream</option><option>Funny</option></select><button class="maker-submit">Add Phrase</button>
+            </form>
+            <form onsubmit="createCustomPlanet(event)" class="glass-card rounded-xl p-3 space-y-2">
+                <h3 class="text-sm font-bold">Planet Maker</h3><div class="grid grid-cols-2 gap-2"><input id="maker-planet-name" required maxlength="32" placeholder="Planet name" class="maker-input"><input id="maker-planet-subtitle" maxlength="40" placeholder="Subtitle" class="maker-input"><input id="maker-planet-atmosphere" maxlength="40" placeholder="Atmosphere" class="maker-input"><select id="maker-planet-gravity" class="maker-input"><option>Earth-like gravity</option><option>Low gravity</option><option>High gravity</option><option>Variable gravity</option></select><select id="maker-planet-climate" class="maker-input"><option>Temperate</option><option>Oceanic</option><option>Arid</option><option>Frozen</option><option>Tropical</option><option>Artificial habitat</option></select><input id="maker-planet-event" maxlength="50" placeholder="Local event" class="maker-input"></div>
+                <button class="maker-submit">Create Unlocked Planet</button>
+            </form>
+            <div id="maker-collections" class="space-y-2"></div>
         </section>
     </main>
 
     <!-- STICKY BOTTOM NAVIGATION BAR (S24 FE Mobile Optimized Layout) -->
     <nav class="fixed bottom-0 inset-x-0 z-50 glass-nav px-2 py-2">
-        <div class="max-w-md mx-auto grid grid-cols-5 gap-1 text-center">
-            <button onclick="switchTab('weather')" id="nav-weather" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-indigo-400 transition-all">
+        <div class="max-w-md mx-auto flex gap-1 overflow-x-auto text-center">
+            <button onclick="switchTab('weather')" id="nav-weather" class="nav-btn min-w-[60px] shrink-0 flex flex-col items-center justify-center py-1.5 rounded-xl text-indigo-400 transition-all">
                 <i data-lucide="cloud-lightning" class="w-5 h-5"></i>
                 <span class="text-[10px] font-bold mt-1">Weather</span>
             </button>
-            <button onclick="switchTab('apartments')" id="nav-apartments" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all">
+            <button onclick="switchTab('apartments')" id="nav-apartments" class="nav-btn min-w-[60px] shrink-0 flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all">
                 <i data-lucide="building-2" class="w-5 h-5"></i>
                 <span class="text-[10px] font-bold mt-1">Miis (54)</span>
             </button>
-            <button onclick="switchTab('planets')" id="nav-planets" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all">
+            <button onclick="switchTab('planets')" id="nav-planets" class="nav-btn min-w-[60px] shrink-0 flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all">
                 <i data-lucide="rocket" class="w-5 h-5"></i>
                 <span class="text-[10px] font-bold mt-1">Planets</span>
             </button>
-            <button onclick="switchTab('charts')" id="nav-charts" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all">
+            <button onclick="switchTab('charts')" id="nav-charts" class="nav-btn min-w-[60px] shrink-0 flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all">
                 <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
                 <span class="text-[10px] font-bold mt-1">Charts</span>
             </button>
-            <button onclick="switchTab('studio')" id="nav-studio" class="nav-btn flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all">
+            <button onclick="switchTab('studio')" id="nav-studio" class="nav-btn min-w-[60px] shrink-0 flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-all">
                 <i data-lucide="mic" class="w-5 h-5"></i>
                 <span class="text-[10px] font-bold mt-1">Studio</span>
             </button>
+            <button onclick="switchTab('family')" id="nav-family" class="nav-btn min-w-[60px] shrink-0 flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400"><i data-lucide="users" class="w-5 h-5"></i><span class="text-[10px] font-bold mt-1">Family</span></button>
+            <button onclick="switchTab('school')" id="nav-school" class="nav-btn min-w-[60px] shrink-0 flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400"><i data-lucide="graduation-cap" class="w-5 h-5"></i><span class="text-[10px] font-bold mt-1">School</span></button>
+            <button onclick="switchTab('jobs')" id="nav-jobs" class="nav-btn min-w-[60px] shrink-0 flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400"><i data-lucide="briefcase-business" class="w-5 h-5"></i><span class="text-[10px] font-bold mt-1">Jobs</span></button>
+            <button onclick="switchTab('outdoors')" id="nav-outdoors" class="nav-btn min-w-[60px] shrink-0 flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400"><i data-lucide="trees" class="w-5 h-5"></i><span class="text-[10px] font-bold mt-1">Outside</span></button>
+            <button onclick="switchTab('makers')" id="nav-makers" class="nav-btn min-w-[60px] shrink-0 flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400"><i data-lucide="wand-sparkles" class="w-5 h-5"></i><span class="text-[10px] font-bold mt-1">Makers</span></button>
         </div>
     </nav>
 
@@ -607,7 +712,7 @@
             "Faith", "Diofe", "Sarai", "Zena Joplin", "Koa", "Nomi"
         ];
 
-        const LIFE_JOBS = ["Producer", "Designer", "Chef", "Researcher", "Engineer", "Photographer", "Teacher", "Musician", "Artist", "Manager", "Doctor", "Writer"];
+        const LIFE_JOBS = ["Producer", "Designer", "Chef", "Researcher", "Engineer", "Photographer", "Teacher", "Musician", "Artist", "Manager", "Doctor", "Writer", "Nurse", "Park Ranger", "Architect", "Farmer", "Small Business Owner", "Librarian", "Software Developer", "Community Organizer"];
         const LIFE_SCHOOL_TRACKS = ["Schooling", "College Prep", "Trade Training", "Creative Arts", "Career Focus"];
         const GENETIC_TRAITS = [
             "dreamer", "charismatic", "brave", "gentle", "dramatic", "calm", "curious", "bold", "observant", "creative", "ambitious", "playful"
@@ -631,7 +736,8 @@
                 { hair: 'Silver', eyes: 'Violet', voice: 'Harmonious' }
             ];
             const traits = geneticsPool[index % geneticsPool.length];
-            const age = 18 + Math.floor(Math.random() * 32);
+            const studentAges = [9, 13, 16, 20];
+            const age = index % 12 < studentAges.length ? studentAges[index % 12] : 18 + Math.floor(Math.random() * 32);
             const job = LIFE_JOBS[index % LIFE_JOBS.length];
             const lifeStage = age < 13 ? 'child' : age < 18 ? 'teen' : age < 30 ? 'young adult' : age < 60 ? 'adult' : 'elder';
             const dominantGene = GENETIC_TRAITS[(index * 3) % GENETIC_TRAITS.length];
@@ -789,14 +895,11 @@
                 { id: 2, title: "Mii Relationships", description: "Improve neighbor friendships and collaboration energy.", reward: 220000, progress: 0, goal: 2, complete: false },
                 { id: 3, title: "Studio Momentum", description: "Release a new single and keep the charts glowing.", reward: 320000, progress: 0, goal: 1, complete: false }
             ],
-            currentStorm: {
-                name: "Oire",
-                category: 4,
-                categoryName: "Category 4 Severe",
-                windSpeed: 145,
-                pressure: 938,
-                threat: "Extreme"
-            },
+            currentStorm: null,
+            currentWeather: { name: "Clear skies", temperature: 24, rainChance: 10 },
+            customItems: [],
+            customFoods: [],
+            customPhrases: [],
             hot100Chart: [
                 { rank: 1, title: "Starlight Echoes", artist: "Fifi (Zena Joplin)", views: "4.2M", explicit: false },
                 { rank: 2, title: "Culpa's Cyclone", artist: "Culpa ft. Oire", views: "3.8M", explicit: true },
@@ -808,6 +911,40 @@
         };
 
         const PRESET_STORM_NAMES = ["Oire", "Culpa", "Saile", "Zephyr", "Vortex Prime", "Hyper-Zena", "Katrina X"];
+        let autoRunTimer = null;
+        let outdoorActivityTimer = null;
+
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+        }
+
+        function getCalendar() {
+            const week = ((Number(gameState.week) - 1) % 52 + 52) % 52 + 1;
+            const seasonIndex = Math.floor((week - 1) / 13);
+            const seasons = ['Winter', 'Spring', 'Summer', 'Autumn'];
+            return { week, year: Math.floor((Number(gameState.week) - 1) / 52) + 1, season: seasons[seasonIndex], hurricaneSeason: week >= 23 && week <= 48 };
+        }
+
+        function getMiiCareerTitle(mii) {
+            if (mii.retired || mii.job === 'Retired') return 'Retired';
+            const level = Number(mii.careerLevel || 1);
+            const title = level >= 8 ? 'Principal' : level >= 6 ? 'Director' : level >= 4 ? 'Senior' : level >= 2 ? 'Associate' : 'Junior';
+            return `${title} ${mii.job || 'Professional'}`;
+        }
+
+        function ensureCustomState() {
+            for (const key of ['customItems', 'customFoods', 'customPhrases', 'worldStories']) {
+                if (!Array.isArray(gameState[key])) gameState[key] = [];
+            }
+            miiData.forEach(mii => {
+                if (!Array.isArray(mii.children)) mii.children = [];
+                if (!Array.isArray(mii.parents)) mii.parents = [];
+                if (!Array.isArray(mii.milestones)) mii.milestones = [];
+                if (mii.schoolProgress == null) mii.schoolProgress = Math.min(100, (Number(mii.schoolLevel) || 1) * 10);
+                if (!mii.schoolTrack) mii.schoolTrack = mii.education || 'General Studies';
+                if (mii.graduated == null) mii.graduated = Number(mii.age) >= 18;
+            });
+        }
 
         function formatCurrency(value) {
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value);
@@ -828,6 +965,7 @@
                     "The city is humming with hopeful ideas and new friendships."
                 ];
             }
+            ensureCustomState();
         }
 
         function updateHeaderStats() {
@@ -877,7 +1015,8 @@
             if (mii.children && mii.children.length) relationshipTopics.push(`their kids and family life`);
             if (mii.exPartners && mii.exPartners.length) relationshipTopics.push(`their old relationships and lessons learned`);
 
-            return [...baseTopics.slice(0, 12), ...relationshipTopics, ...baseTopics.slice(12)];
+            const customTopics = (gameState.customPhrases || []).map(phrase => phrase.text);
+            return [...baseTopics.slice(0, 12), ...relationshipTopics, ...customTopics, ...baseTopics.slice(12)];
         }
 
         function getAgeStage(age) {
@@ -969,18 +1108,33 @@
                     mii.job = 'Student';
                     mii.careerTitle = 'Student';
                     mii.schoolLevel = Math.max(1, Math.min(8, (mii.schoolLevel || 1) + (Math.random() < 0.5 ? 1 : 0)));
+                    mii.schoolProgress = Math.min(100, Number(mii.schoolProgress || 0) + 8 + Math.floor(Math.random() * 8));
+                    if (mii.schoolProgress >= 100) {
+                        mii.schoolProgress = 0;
+                        mii.schoolLevel += 1;
+                        mii.milestones = [...new Set([...(mii.milestones || []), `Completed ${mii.schoolTrack || 'school'} term`])];
+                        recordLifeEvent(`${mii.name} completed a school term and moved up to level ${mii.schoolLevel}.`);
+                    }
                     if (mii.age >= 18 && !mii.graduated) {
                         mii.graduated = true;
                         mii.education = 'Graduated';
                         recordLifeEvent(`${mii.name} graduated and stepped into a new phase of adulthood.`);
                     }
                 } else {
+                    if (mii.age >= 18 && !mii.graduated) {
+                        mii.graduated = true;
+                        mii.education = 'Graduated';
+                        mii.schoolProgress = 100;
+                        mii.milestones = [...new Set([...(mii.milestones || []), 'Graduated from school'])];
+                        recordLifeEvent(`${mii.name} graduated and began building an adult life.`);
+                    }
                     if (!mii.job || mii.job === 'Student') {
                         mii.job = LIFE_JOBS[Math.floor(Math.random() * LIFE_JOBS.length)];
                     }
                     mii.education = mii.age < 22 ? 'Career Training' : mii.age < 40 ? 'Work & Growth' : mii.age >= 65 ? 'Retirement' : 'Life Experience';
                     mii.careerTitle = mii.job;
                     mii.schoolLevel = Math.max(1, Math.min(12, (mii.schoolLevel || 4) + (Math.random() < 0.22 ? 1 : 0)));
+                    mii.careerTitle = getMiiCareerTitle(mii);
                 }
 
                 if (mii.age >= 65 && !mii.retired) {
@@ -1020,9 +1174,8 @@
                 if (mii.age > 17 && stage !== 'child' && stage !== 'teen' && Math.random() < 0.14) {
                     mii.careerLevel += 1;
                     mii.careerTier = getCareerTier(mii);
-                    if (mii.careerLevel > 1) {
-                        mii.legacyName = `${mii.name} ${mii.careerTier}`;
-                    }
+                    mii.careerTitle = getMiiCareerTitle(mii);
+                    recordLifeEvent(`${mii.name} was promoted to ${mii.careerTitle}.`);
                 }
                 if (mii.age >= 18 && mii.careerLevel >= 4 && !mii.promoted) {
                     mii.promoted = true;
@@ -1041,7 +1194,7 @@
                         <span class="w-1.5 h-1.5 rounded-full ${index % 2 === 0 ? 'bg-emerald-400' : 'bg-indigo-400'}"></span>
                         <span class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Life Event</span>
                     </div>
-                    <p class="text-[11px] text-slate-200 leading-relaxed">${entry}</p>
+                    <p class="text-[11px] text-slate-200 leading-relaxed">${escapeHTML(entry)}</p>
                 </div>
             `).join('');
         }
@@ -1164,6 +1317,217 @@
 
             renderLifeEvents();
             renderWorldStories();
+            renderFamilyTab();
+            renderSchoolTab();
+            renderJobsTab();
+        }
+
+        function renderFamilyTab() {
+            const container = document.getElementById('family-tab-content');
+            if (!container) return;
+            container.innerHTML = miiData.map(mii => {
+                const parents = (mii.parents || []).map(id => miiData.find(person => person.id === id)?.name).filter(Boolean);
+                const children = (mii.children || []).map(id => miiData.find(person => person.id === id)?.name).filter(Boolean);
+                const partner = mii.partnerId ? miiData.find(person => person.id === mii.partnerId)?.name : null;
+                return `<article class="glass-card rounded-xl border border-slate-800 p-3 ${mii.alive ? '' : 'opacity-60'}">
+                    <div class="flex items-center justify-between"><h3 class="font-bold text-sm">${escapeHTML(mii.name)} <span class="text-[10px] font-normal text-slate-400">${mii.alive ? `Age ${mii.age}` : 'Remembered'}</span></h3><span class="text-[10px] text-amber-300">${escapeHTML(mii.legacyName || `${mii.name} Legacy`)}</span></div>
+                    <p class="mt-1 text-[10px] text-slate-300">Parents: ${parents.length ? parents.map(escapeHTML).join(' + ') : 'Not recorded'}</p>
+                    <p class="text-[10px] text-slate-300">Partner: ${escapeHTML(partner || 'None')} · Children: ${children.length ? children.map(escapeHTML).join(', ') : 'None'}</p>
+                    <p class="mt-1 text-[9px] text-slate-500">${escapeHTML((mii.milestones || []).slice(-3).join(' · ') || 'No recorded milestones')}</p>
+                </article>`;
+            }).join('');
+        }
+
+        function renderSchoolTab() {
+            const container = document.getElementById('school-tab-content');
+            if (!container) return;
+            const learners = miiData.filter(mii => mii.alive && mii.age < 22);
+            container.innerHTML = learners.length ? learners.map(mii => `
+                <article class="glass-card rounded-xl border border-slate-800 p-3">
+                    <div class="flex justify-between gap-2"><div><h3 class="text-sm font-bold">${escapeHTML(mii.name)}</h3><p class="text-[10px] text-slate-400">Age ${mii.age} · ${escapeHTML(mii.education || 'Schooling')}</p></div><span class="text-[10px] text-cyan-300">Level ${Number(mii.schoolLevel || 1)}</span></div>
+                    <label class="block mt-2 text-[10px] text-slate-400">Study track<select onchange="setSchoolTrack(${Number(mii.id)}, this.value)" class="maker-input mt-1">${LIFE_SCHOOL_TRACKS.map(track => `<option ${mii.schoolTrack === track ? 'selected' : ''}>${escapeHTML(track)}</option>`).join('')}</select></label>
+                    <div class="mt-2 h-2 rounded-full bg-slate-800"><div class="h-full rounded-full bg-cyan-400" style="width:${Math.min(100, Number(mii.schoolProgress || 0))}%"></div></div>
+                    <div class="mt-2 flex justify-between items-center"><span class="text-[10px] text-slate-400">${mii.graduated ? 'Graduated' : `${Math.min(100, Number(mii.schoolProgress || 0))}% term progress`}</span><button onclick="studyMii(${Number(mii.id)})" class="px-2.5 py-1 bg-cyan-800 hover:bg-cyan-700 rounded text-[10px] font-bold">Study</button></div>
+                </article>`).join('') : '<p class="text-xs text-slate-400">No school-age residents right now.</p>';
+        }
+
+        function setSchoolTrack(miiId, track) {
+            const mii = miiData.find(person => person.id === miiId);
+            if (!mii || mii.age >= 22 || !LIFE_SCHOOL_TRACKS.includes(track)) return;
+            mii.schoolTrack = track;
+            mii.education = track;
+            renderSchoolTab();
+        }
+
+        function studyMii(miiId) {
+            const mii = miiData.find(person => person.id === miiId);
+            if (!mii || !mii.alive || mii.age >= 22) return;
+            mii.schoolProgress = Number(mii.schoolProgress || 0) + 20;
+            if (mii.schoolProgress >= 100) {
+                mii.schoolProgress -= 100;
+                mii.schoolLevel = Number(mii.schoolLevel || 1) + 1;
+                mii.happiness = Math.min(100, Number(mii.happiness || 70) + 4);
+                recordLifeEvent(`${mii.name} completed a school term in ${mii.schoolTrack || 'General Studies'}.`);
+            }
+            renderSchoolTab();
+            renderLifeOverview();
+            persistGameSilently();
+        }
+
+        function renderJobsTab() {
+            const container = document.getElementById('jobs-tab-content');
+            if (!container) return;
+            container.innerHTML = miiData.filter(mii => mii.alive && mii.age >= 18).map(mii => `
+                <article class="glass-card rounded-xl border border-slate-800 p-3">
+                    <div class="flex items-center justify-between"><div><h3 class="text-sm font-bold">${escapeHTML(mii.name)}</h3><p class="text-[10px] text-emerald-300">${escapeHTML(getMiiCareerTitle(mii))} · Level ${Number(mii.careerLevel || 1)}</p></div><span class="text-[10px] text-slate-300">${formatCurrency(Number(mii.income || 0))}/yr</span></div>
+                    <div class="mt-2 grid grid-cols-[1fr_auto] gap-2"><select onchange="setMiiJob(${Number(mii.id)}, this.value)" class="maker-input" ${mii.retired ? 'disabled' : ''}>${LIFE_JOBS.map(job => `<option ${mii.job === job ? 'selected' : ''}>${escapeHTML(job)}</option>`).join('')}<option ${mii.retired ? 'selected' : ''}>Retired</option></select><span class="self-center text-[10px] text-slate-400">${escapeHTML(mii.education || 'Experience')}</span></div>
+                </article>`).join('') || '<p class="text-xs text-slate-400">No working-age Miis are available.</p>';
+        }
+
+        function setMiiJob(miiId, job) {
+            const mii = miiData.find(person => person.id === miiId);
+            if (!mii || !LIFE_JOBS.includes(job) || mii.retired) return;
+            mii.job = job;
+            mii.careerTitle = getMiiCareerTitle(mii);
+            mii.careerLevel = Math.max(1, Number(mii.careerLevel || 1));
+            recordLifeEvent(`${mii.name} started a new role as a ${job}.`);
+            renderJobsTab();
+            renderLifeOverview();
+            persistGameSilently();
+        }
+
+        function renderOutdoorScene() {
+            const layer = document.getElementById('outdoor-mii-layer');
+            const worldLabel = document.getElementById('outdoor-world-label');
+            const activity = document.getElementById('outdoor-activity');
+            if (!layer) return;
+            const visitors = miiData.filter(mii => mii.alive);
+            layer.innerHTML = visitors.map((mii, index) => {
+                const left = 2 + (index % 6) * 16;
+                const top = 4 + Math.floor(index / 6) * 10;
+                return `<button title="Talk with ${escapeHTML(mii.name)}" onclick="talkToMii(${Number(mii.id)})" class="outdoor-mii absolute flex w-12 flex-col items-center" style="left:${left}%;top:${top}%;--walk-time:${8 + index % 8}s;--walk-delay:-${index % 7}s"><span class="grid h-7 w-7 place-items-center rounded-full border-2 border-white/80 bg-gradient-to-br from-rose-400 to-amber-300 text-[9px] font-black text-slate-900 shadow-lg">${escapeHTML(mii.name.slice(0, 2))}</span><span class="mt-0.5 max-w-full truncate rounded bg-slate-950/75 px-1 text-[8px] font-bold text-white">${escapeHTML(mii.name)}</span></button>`;
+            }).join('');
+            if (worldLabel) worldLabel.textContent = `${WORLDS.find(world => world.id === gameState.currentWorldId)?.name || 'Neighborhood'} · ${visitors.length} Miis in the neighborhood`;
+            if (activity) activity.textContent = visitors.length ? `${visitors[Math.floor(Math.random() * visitors.length)].name} is enjoying the day. Tap any Mii to start a conversation.` : 'The neighborhood is quiet today.';
+        }
+
+        function initializeMakers() {
+            const options = (values, placeholder) => values.map(value => `<option>${escapeHTML(value)}</option>`).join('');
+            document.getElementById('maker-mii-trait').innerHTML = options(GENETIC_TRAITS);
+            document.getElementById('maker-mii-hair').innerHTML = options(GENE_PALETTES.hair);
+            document.getElementById('maker-mii-eyes').innerHTML = options(GENE_PALETTES.eyes);
+            document.getElementById('maker-mii-voice').innerHTML = options(GENE_PALETTES.voice);
+            document.getElementById('maker-mii-skin').innerHTML = options(GENE_PALETTES.skin);
+            document.getElementById('maker-mii-height').innerHTML = options(GENE_PALETTES.height);
+            document.getElementById('maker-mii-build').innerHTML = options(GENE_PALETTES.build);
+            document.getElementById('maker-mii-world').innerHTML = WORLDS.filter(world => world.unlocked).map(world => `<option value="${escapeHTML(world.id)}">${escapeHTML(world.name)}</option>`).join('');
+            const recipients = miiData.filter(mii => mii.alive).map(mii => `<option value="${Number(mii.id)}">${escapeHTML(mii.name)}</option>`).join('');
+            document.getElementById('maker-item-recipient').innerHTML = recipients;
+            document.getElementById('maker-food-recipient').innerHTML = recipients;
+            renderMakerCollections();
+        }
+
+        function createCustomMii(event) {
+            event.preventDefault();
+            const name = document.getElementById('maker-mii-name').value.trim();
+            const age = Math.max(0, Math.min(110, Number(document.getElementById('maker-mii-age').value) || 18));
+            if (!/^[\p{L}\p{N}][\p{L}\p{N} .'-]*$/u.test(name) || miiData.some(mii => mii.name.toLowerCase() === name.toLowerCase())) return;
+            const job = age >= 18 ? LIFE_JOBS[Math.floor(Math.random() * LIFE_JOBS.length)] : 'Student';
+            const mii = {
+                id: Math.max(0, ...miiData.map(person => Number(person.id) || 0)) + 1,
+                name, age, alive: true, planetId: 'earth', worldId: document.getElementById('maker-mii-world').value,
+                starred: false, level: 1, genrePreference: 'Pop', birthdayMonth: MONTH_NAMES[Math.floor(Math.random() * MONTH_NAMES.length)],
+                relationship: 'New Neighbor', relationshipStage: age < 18 ? 'child' : 'single', partnerId: null, exPartners: [], exFriends: [], rivalId: null,
+                children: [], parents: [], siblings: [], relationshipHistory: [], job, education: age < 18 ? 'Schooling' : 'Career Training',
+                health: 80, stress: 20, happiness: 75, mood: 75, income: age < 18 ? 0 : 24000, careerLevel: 1, careerTitle: job,
+                schoolLevel: 1, schoolProgress: 0, schoolTrack: LIFE_SCHOOL_TRACKS[0], graduated: age >= 18, lifeStage: getAgeStage(age),
+                retirementAge: 65, retired: false, milestones: ['Joined the neighborhood'], friendship: 30,
+                genetics: { hair: document.getElementById('maker-mii-hair').value, eyes: document.getElementById('maker-mii-eyes').value, voice: document.getElementById('maker-mii-voice').value, skin: document.getElementById('maker-mii-skin').value, height: document.getElementById('maker-mii-height').value, build: document.getElementById('maker-mii-build').value, trait: document.getElementById('maker-mii-trait').value, dominantGene: document.getElementById('maker-mii-trait').value, eyeShape: 'Round', smile: 'Bright' }
+            };
+            miiData.push(mii);
+            gameState.townPopulation += 1;
+            event.target.reset();
+            initializeMakers();
+            renderApartments(); renderFamilyTab(); renderSchoolTab(); renderJobsTab(); renderOutdoorScene(); renderLifeOverview(); updateHeaderStats();
+            populateArtistSelect(); persistGameSilently();
+        }
+
+        function createCustomItem(event) {
+            event.preventDefault();
+            gameState.customItems.unshift({ name: document.getElementById('maker-item-name').value.trim(), type: document.getElementById('maker-item-type').value, effect: document.getElementById('maker-item-effect').value, rarity: document.getElementById('maker-item-rarity').value, recipientId: Number(document.getElementById('maker-item-recipient').value), uses: 1 });
+            event.target.reset(); renderMakerCollections(); persistGameSilently();
+        }
+
+        function createCustomFood(event) {
+            event.preventDefault();
+            gameState.customFoods.unshift({ name: document.getElementById('maker-food-name').value.trim(), type: document.getElementById('maker-food-type').value, favorite: document.getElementById('maker-food-favorite').value, quality: document.getElementById('maker-food-quality').value, recipientId: Number(document.getElementById('maker-food-recipient').value), servings: 1 });
+            event.target.reset(); renderMakerCollections(); persistGameSilently();
+        }
+
+        function createCustomPhrase(event) {
+            event.preventDefault();
+            gameState.customPhrases.unshift({ text: document.getElementById('maker-phrase-text').value.trim(), category: document.getElementById('maker-phrase-category').value });
+            event.target.reset(); renderMakerCollections(); persistGameSilently();
+        }
+
+        function createCustomPlanet(event) {
+            event.preventDefault();
+            const name = document.getElementById('maker-planet-name').value.trim();
+            if (!/^[\p{L}\p{N}][\p{L}\p{N} .'-]*$/u.test(name) || PLANETS.some(planet => planet.name.toLowerCase() === name.toLowerCase())) return;
+            PLANETS.push({ id: `custom-${Date.now()}`, name, subtitle: document.getElementById('maker-planet-subtitle').value.trim() || 'Newly discovered world', unlocked: true, reqDescription: 'Created by the Planet Maker', atmosphere: `${document.getElementById('maker-planet-atmosphere').value.trim() || 'Temperate'} · ${document.getElementById('maker-planet-climate').value} · ${document.getElementById('maker-planet-gravity').value}`, event: document.getElementById('maker-planet-event').value.trim() || 'Community gathering', icon: 'globe' });
+            event.target.reset(); renderPlanets(); initializeMakers(); renderMakerCollections(); persistGameSilently();
+        }
+
+        function renderMakerCollections() {
+            const container = document.getElementById('maker-collections');
+            if (!container) return;
+            const section = (title, items, buttonLabel, handler) => `<section class="glass-card rounded-xl p-3"><h3 class="mb-2 text-xs font-bold uppercase text-slate-400">${title}</h3>${items.length ? items.map((item, index) => `<div class="flex items-center justify-between gap-2 border-t border-slate-800 py-2"><div class="min-w-0"><p class="truncate text-xs font-semibold">${escapeHTML(item.name || item.text)}</p><p class="text-[10px] text-slate-400">${escapeHTML([item.type, item.effect || item.favorite, item.rarity || item.quality, item.category].filter(Boolean).join(' · '))}</p></div>${buttonLabel ? `<button onclick="${handler}(${index})" class="shrink-0 rounded bg-slate-800 px-2 py-1 text-[10px] font-bold">${buttonLabel}</button>` : ''}</div>`).join('') : '<p class="text-[10px] text-slate-500">Nothing created yet.</p>'}</section>`;
+            container.innerHTML = section('Custom items', gameState.customItems, 'Use', 'useMakerItem') + section('Custom food', gameState.customFoods, 'Serve', 'useMakerFood') + section('Phrases', gameState.customPhrases, '', '');
+        }
+
+        function useMakerItem(index) {
+            const item = gameState.customItems[index];
+            const mii = miiData.find(person => person.id === item?.recipientId && person.alive);
+            if (!item || !mii) return;
+            item.uses = Number(item.uses || 1) - 1;
+            if (item.effect === 'Energy') mii.health = Math.min(100, Number(mii.health || 70) + 5);
+            else if (item.effect === 'Friendship') mii.friendship = Math.min(100, Number(mii.friendship || 0) + 5);
+            else mii.happiness = Math.min(100, Number(mii.happiness || 70) + 5);
+            recordLifeEvent(`${mii.name} enjoyed using ${item.name} (${item.effect}).`);
+            if (item.uses <= 0) gameState.customItems.splice(index, 1);
+            renderMakerCollections(); renderLifeOverview(); persistGameSilently();
+        }
+
+        function useMakerFood(index) {
+            const food = gameState.customFoods[index];
+            const mii = miiData.find(person => person.id === food?.recipientId && person.alive);
+            if (!food || !mii) return;
+            food.servings = Number(food.servings || 1) - 1;
+            mii.happiness = Math.min(100, Number(mii.happiness || 70) + 8);
+            mii.health = Math.min(100, Number(mii.health || 70) + 2);
+            recordLifeEvent(`${mii.name} shared a serving of ${food.name}.`);
+            if (food.servings <= 0) gameState.customFoods.splice(index, 1);
+            renderMakerCollections(); renderLifeOverview(); persistGameSilently();
+        }
+
+        function toggleAutoRun() {
+            const button = document.getElementById('auto-run-button');
+            const status = document.getElementById('auto-run-status');
+            if (autoRunTimer) {
+                clearInterval(autoRunTimer);
+                autoRunTimer = null;
+                if (button) button.textContent = 'Start';
+                if (status) status.textContent = 'Paused';
+            } else {
+                autoRunTimer = setInterval(() => advanceWeek(), 5000);
+                if (button) button.textContent = 'Pause';
+                if (status) status.textContent = 'One week every 5 seconds';
+            }
+        }
+
+        function persistGameSilently() {
+            const saveData = { gameState, miiData, planets: PLANETS.map(planet => ({ ...planet })), worlds: WORLDS.map(world => ({ ...world })) };
+            try { localStorage.setItem('tomodachi-life-save', JSON.stringify(saveData)); } catch (error) { console.warn('Automatic save was unavailable.', error); }
         }
 
         function renderWeekPanel() {
@@ -1184,7 +1548,8 @@
                 eventLog.innerHTML = gameState.eventLog.slice(0, 3).map(entry => `
                     <li class="flex gap-2 items-start">
                         <span class="mt-1 w-1.5 h-1.5 rounded-full bg-indigo-400"></span>
-                        <span>${entry}</span>
+                        <span>${escapeHTML(entry)}</span>
+                                renderSeasonalWeather();
                     </li>
                 `).join('');
             }
@@ -1300,6 +1665,7 @@
             renderWorldTravelSection();
             renderWorld3DModal();
             renderWeekPanel();
+            renderOutdoorScene();
         }
 
         function findSuitablePartner(mii) {
@@ -1599,13 +1965,7 @@
         }
 
         function saveGame() {
-            const saveData = {
-                gameState,
-                miiData,
-                planets: PLANETS.map(planet => ({ ...planet })),
-                worlds: WORLDS.map(world => ({ ...world }))
-            };
-            localStorage.setItem('tomodachi-life-save', JSON.stringify(saveData));
+            persistGameSilently();
             const eventLog = document.getElementById('weekly-event-log');
             if (eventLog) {
                 eventLog.innerHTML = '<li class="flex gap-2 items-start"><span class="mt-1 w-1.5 h-1.5 rounded-full bg-emerald-400"></span><span>Game saved successfully.</span></li>';
@@ -1622,13 +1982,19 @@
                 return;
             }
 
-            const data = JSON.parse(raw);
+            let data;
+            try { data = JSON.parse(raw); } catch (error) {
+                localStorage.removeItem('tomodachi-life-save');
+                console.warn('The saved island data was invalid and has been cleared.', error);
+                return;
+            }
             if (data.gameState) Object.assign(gameState, data.gameState);
             if (Array.isArray(data.miiData)) miiData = data.miiData;
             if (Array.isArray(data.planets)) {
                 data.planets.forEach(savedPlanet => {
                     const match = PLANETS.find(planet => planet.id === savedPlanet.id);
                     if (match) Object.assign(match, savedPlanet);
+                    else if (String(savedPlanet.id).startsWith('custom-')) PLANETS.push(savedPlanet);
                 });
             }
             if (Array.isArray(data.worlds)) {
@@ -1650,6 +2016,9 @@
             updateHeaderStats();
             renderWorld3DModal();
             populateArtistSelect();
+            initializeMakers();
+            renderSeasonalWeather();
+            renderFamilyTab(); renderSchoolTab(); renderJobsTab(); renderOutdoorScene();
         }
 
         function advanceWeek(fastForward = false) {
@@ -1704,6 +2073,8 @@
             renderWeekPanel();
             updateHeaderStats();
             renderApartments();
+            renderOutdoorScene();
+            persistGameSilently();
         }
 
         function advanceYear() {
@@ -1742,6 +2113,10 @@
             renderWeekPanel();
             updateHeaderStats();
             renderApartments();
+            randomizeStorm();
+            renderSeasonalWeather();
+            renderOutdoorScene();
+            persistGameSilently();
         }
 
         function fastForwardWeek() {
@@ -1773,6 +2148,7 @@
         // -------------------------------------------------------------
         window.onload = function() {
             ensureLifeSystemData();
+            if (localStorage.getItem('tomodachi-life-save')) loadGame();
             checkPlanetUnlocks();
 
             checkWorldUnlocks();
@@ -1788,6 +2164,10 @@
             renderWeekPanel();
             updateHeaderStats();
             renderWorld3DModal();
+            renderSeasonalWeather();
+            initializeMakers();
+            renderFamilyTab(); renderSchoolTab(); renderJobsTab(); renderOutdoorScene();
+            outdoorActivityTimer = setInterval(renderOutdoorScene, 3500);
 
             // Initialize Lucide icons
             lucide.createIcons();
@@ -1817,12 +2197,18 @@
                 activeBtn.classList.remove('text-slate-400');
                 activeBtn.classList.add('text-indigo-400');
             }
+            if (tabId === 'outdoors') renderOutdoorScene();
+            if (tabId === 'makers') initializeMakers();
+            if (tabId === 'family') renderFamilyTab();
+            if (tabId === 'school') renderSchoolTab();
+            if (tabId === 'jobs') renderJobsTab();
         }
 
         // -------------------------------------------------------------
         // 5. WEATHER & DYNAMIC HURRICANE NAMING SYSTEM
         // -------------------------------------------------------------
         function openStormNamingModal() {
+            if (!gameState.currentStorm) return;
             document.getElementById('custom-storm-name').value = gameState.currentStorm.name;
             document.getElementById('storm-naming-modal').classList.remove('hidden');
         }
@@ -1846,37 +2232,80 @@
 
         function saveStormName() {
             const newName = document.getElementById('custom-storm-name').value.trim() || "Oire";
+            if (!gameState.currentStorm) return;
             gameState.currentStorm.name = newName;
 
-            // Update UI
-            document.getElementById('storm-display-name').textContent = `Hurricane ${newName}`;
-            document.getElementById('radar-storm-label').textContent = newName;
-
+            renderSeasonalWeather();
             closeStormNamingModal();
         }
 
-        function randomizeStorm() {
+        function randomizeStorm(force = false) {
+            const calendar = getCalendar();
+            if (gameState.currentStorm && gameState.currentStorm.remainingWeeks > 1 && !force) {
+                gameState.currentStorm.remainingWeeks -= 1;
+                renderSeasonalWeather();
+                return;
+            }
+            gameState.currentStorm = null;
             const categories = [
-                { cat: 1, name: "Category 1 Breeze", wind: 85, pres: 985, threat: "Moderate" },
-                { cat: 2, name: "Category 2 Gust", wind: 105, pres: 970, threat: "High" },
-                { cat: 3, name: "Category 3 Major Surge", wind: 125, pres: 950, threat: "Severe" },
-                { cat: 4, name: "Category 4 Severe", wind: 145, pres: 938, threat: "Extreme" },
-                { cat: 5, name: "Category 5 Super Typhoon", wind: 175, pres: 910, threat: "Catastrophic" },
-                { cat: 6, name: "Cat 6 Hypercane Cataclysm", wind: 215, pres: 870, threat: "Apocalyptic" }
+                { cat: 1, name: "Category 1 Tropical Cyclone", wind: 80, pres: 985, threat: "Moderate" },
+                { cat: 2, name: "Category 2 Tropical Cyclone", wind: 103, pres: 970, threat: "High" },
+                { cat: 3, name: "Category 3 Major Hurricane", wind: 122, pres: 950, threat: "Severe" },
+                { cat: 4, name: "Category 4 Major Hurricane", wind: 145, pres: 938, threat: "Extreme" },
+                { cat: 5, name: "Category 5 Major Hurricane", wind: 170, pres: 910, threat: "Catastrophic" }
             ];
+            const climate = [
+                { name: 'Clear skies', temperature: 25, rainChance: 8 },
+                { name: 'Passing showers', temperature: 22, rainChance: 65 },
+                { name: 'Breezy and bright', temperature: 19, rainChance: 15 },
+                { name: 'Cloudy', temperature: 17, rainChance: 35 },
+                { name: 'Warm and humid', temperature: 29, rainChance: 28 }
+            ];
+            const stormChance = calendar.hurricaneSeason ? 0.18 : 0.015;
+            if (force || Math.random() < stormChance) {
+                const tropicalStorm = Math.random() < 0.58;
+                const pick = categories[Math.floor(Math.random() * (tropicalStorm ? 2 : categories.length))];
+                gameState.currentStorm = {
+                    name: pickGeneValue(PRESET_STORM_NAMES, 'Saile'),
+                    kind: tropicalStorm ? 'Tropical Storm' : 'Hurricane',
+                    category: pick.cat,
+                    categoryName: pick.name,
+                    windSpeed: pick.wind,
+                    pressure: pick.pres,
+                    threat: pick.threat,
+                    remainingWeeks: 1 + Math.floor(Math.random() * 3)
+                };
+                gameState.currentWeather = { name: `${gameState.currentStorm.kind} ${gameState.currentStorm.name}`, temperature: 24, rainChance: 100 };
+            } else {
+                gameState.currentWeather = climate[Math.floor(Math.random() * climate.length)];
+            }
+            renderSeasonalWeather();
+        }
 
-            const pick = categories[Math.floor(Math.random() * categories.length)];
-            gameState.currentStorm.category = pick.cat;
-            gameState.currentStorm.categoryName = pick.name;
-            gameState.currentStorm.windSpeed = pick.wind;
-            gameState.currentStorm.pressure = pick.pres;
-            gameState.currentStorm.threat = pick.threat;
-
-            // Update Weather UI
-            document.getElementById('storm-category-badge').textContent = pick.name;
-            document.getElementById('storm-wind-speed').textContent = `${pick.wind} mph`;
-            document.getElementById('storm-pressure').textContent = `${pick.pres} mbar`;
-            document.getElementById('storm-threat').textContent = pick.threat;
+        function renderSeasonalWeather() {
+            const calendar = getCalendar();
+            const storm = gameState.currentStorm;
+            const normal = gameState.currentWeather || { name: 'Clear skies', temperature: 24, rainChance: 10 };
+            const title = document.getElementById('storm-display-name');
+            const label = document.getElementById('radar-storm-label');
+            const season = document.getElementById('weather-season-label');
+            const visual = document.getElementById('radar-storm-visual');
+            const badge = document.getElementById('storm-category-badge');
+            const card = badge?.closest('.bg-slate-900\/80');
+            if (season) season.textContent = `Year ${calendar.year} · ${calendar.season} · ${calendar.hurricaneSeason ? 'Hurricane season' : 'Off-season'}`;
+            if (title) title.textContent = storm ? `${storm.kind} ${storm.name}` : normal.name;
+            if (label) label.textContent = storm ? `Eye of ${storm.name}` : `${normal.temperature}°C · ${normal.rainChance}% rain`;
+            const rename = document.getElementById('storm-rename-button');
+            if (rename) rename.classList.toggle('hidden', !storm);
+            if (visual) visual.classList.toggle('hidden', !storm);
+            if (badge) badge.textContent = storm ? storm.categoryName : 'No active storm';
+            if (card) card.classList.toggle('opacity-50', !storm);
+            const wind = document.getElementById('storm-wind-speed');
+            const pressure = document.getElementById('storm-pressure');
+            const threat = document.getElementById('storm-threat');
+            if (wind) wind.textContent = storm ? `${storm.windSpeed} mph` : `${Math.round(normal.temperature * 1.8 + 32)}°F`;
+            if (pressure) pressure.textContent = storm ? `${storm.pressure} mbar` : `${normal.rainChance}% rain`;
+            if (threat) threat.textContent = storm ? storm.threat : 'Low';
         }
 
         // -------------------------------------------------------------
@@ -1890,14 +2319,14 @@
                 <div class="glass-card rounded-xl p-3 border border-slate-800 flex flex-col justify-between ${mii.alive ? '' : 'opacity-40'}">
                     <div class="flex items-start justify-between">
                         <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center font-extrabold text-white text-xs">
-                            ${mii.name.substring(0, 2)}
+                            ${escapeHTML(mii.name.substring(0, 2))}
                         </div>
                         <button onclick="toggleStarMii(${mii.id})" class="text-xs ${mii.starred ? 'text-amber-400' : 'text-slate-600'}">
                             ★
                         </button>
                     </div>
                     <div class="mt-2">
-                        <h4 class="text-xs font-bold text-slate-100">${mii.name}</h4>
+                        <h4 class="text-xs font-bold text-slate-100">${escapeHTML(mii.name)}</h4>
                         <p class="text-[10px] text-indigo-400 font-medium">Age ${mii.age} • ${mii.relationshipStage}</p>
                         <p class="text-[10px] text-slate-400 font-medium">Loc: ${getPlanetNameById(mii.planetId)}</p>
                     </div>
@@ -1950,22 +2379,22 @@
                                 <span class="text-[10px] font-bold ${planet.unlocked ? 'text-emerald-400' : 'text-amber-400'} uppercase">
                                     ${planet.unlocked ? 'Unlocked Colony' : 'Locked Milestone'}
                                 </span>
-                                <h3 class="text-base font-bold text-slate-100">${planet.name}</h3>
-                                <p class="text-xs text-slate-400">${planet.subtitle}</p>
+                                <h3 class="text-base font-bold text-slate-100">${escapeHTML(planet.name)}</h3>
+                                <p class="text-xs text-slate-400">${escapeHTML(planet.subtitle)}</p>
                             </div>
                             <span class="px-2.5 py-1 bg-slate-900 text-indigo-300 font-extrabold text-xs rounded-lg border border-slate-800">
                                 ${residentCount} Miis
                             </span>
                         </div>
                         <div class="text-[11px] text-slate-300 pt-1">
-                            <span class="font-semibold text-slate-400">Environment:</span> ${planet.atmosphere}
+                            <span class="font-semibold text-slate-400">Environment:</span> ${escapeHTML(planet.atmosphere)}
                         </div>
                         <div class="text-[11px] text-slate-300">
-                            <span class="font-semibold text-slate-400">Unique Event:</span> ${planet.event}
+                            <span class="font-semibold text-slate-400">Unique Event:</span> ${escapeHTML(planet.event)}
                         </div>
                         ${!planet.unlocked ? `
                             <div class="mt-2 p-2 bg-slate-900/90 rounded-lg border border-amber-500/30 text-[10px] text-amber-300 font-bold">
-                                Lock Requirement: ${planet.reqDescription}
+                                Lock Requirement: ${escapeHTML(planet.reqDescription)}
                             </div>
                         ` : ''}
                     </div>
@@ -2018,10 +2447,10 @@
                         <span class="w-6 text-center font-black text-sm text-indigo-400">#${song.rank}</span>
                         <div>
                             <h4 class="text-xs font-bold text-slate-100 flex items-center gap-1">
-                                ${song.title}
+                                ${escapeHTML(song.title)}
                                 ${song.explicit ? '<span class="text-[9px] bg-red-950 text-red-400 px-1 font-black rounded border border-red-800">[E]</span>' : ''}
                             </h4>
-                            <p class="text-[10px] text-slate-400">${song.artist}</p>
+                            <p class="text-[10px] text-slate-400">${escapeHTML(song.artist)}</p>
                         </div>
                     </div>
                     <span class="text-xs font-extrabold text-slate-300">${song.views}</span>
@@ -2041,22 +2470,73 @@
 
         function populateArtistSelect() {
             const select = document.getElementById('song-artist-select');
-            select.innerHTML = LORE_MIIS.map(name => `<option value="${name}">${name}</option>`).join('');
+            select.innerHTML = miiData.filter(mii => mii.alive).map(mii => `<option value="${escapeHTML(mii.name)}">${escapeHTML(mii.name)}</option>`).join('');
         }
 
         // -------------------------------------------------------------
         // 9. AUDIBLE SING SONG & LYRIC SYNTHESIZER
         // -------------------------------------------------------------
         function playSongSynth() {
-            const lyrics = document.getElementById('song-lyrics-input').value.trim() || "La la la, Tomodachi paradise!";
-            
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel(); // Reset previous speech
-                const utterance = new SpeechSynthesisUtterance(lyrics);
-                utterance.pitch = 1.3; // Cute Mii tone pitch
-                utterance.rate = 1.0;
-                window.speechSynthesis.speak(utterance);
+            const lyrics = document.getElementById('song-lyrics-input').value.trim() || 'Tomodachi, sing beneath the stars';
+            const status = document.getElementById('song-performance-status');
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContextClass) {
+                if (status) status.textContent = 'This browser does not support audio playback.';
+                return;
             }
+            const audio = new AudioContextClass();
+            const master = audio.createGain();
+            master.gain.value = 0.16;
+            master.connect(audio.destination);
+            const artist = miiData.find(mii => mii.name === document.getElementById('song-artist-select').value);
+            const voicePitch = artist?.genetics?.voice === 'Bright' ? 1 : artist?.genetics?.voice === 'Deep' ? -2 : 0;
+            const tempo = Number(document.getElementById('song-tempo').value) || 0.24;
+            const style = document.getElementById('song-melody-style').value;
+            const scales = {
+                'Random pop': [0, 2, 4, 5, 7, 9, 11, 12],
+                Gentle: [0, 2, 4, 7, 9, 12],
+                Bright: [0, 4, 5, 7, 11, 12],
+                Dramatic: [0, 3, 5, 7, 10, 12]
+            };
+            const scale = scales[style] || scales['Random pop'];
+            const words = lyrics.match(/[\p{L}\p{N}'-]+|[^\p{L}\p{N}'-]+/gu) || [lyrics];
+            const syllables = [];
+            words.forEach(token => {
+                if (!/[\p{L}\p{N}]/u.test(token)) {
+                    if (/[,.!?;:]/.test(token)) syllables.push({ pause: true, duration: tempo * 0.8 });
+                    return;
+                }
+                const chunks = token.toLowerCase().match(/[^aeiouy]*[aeiouy]+(?:[^aeiouy]*$)?/g) || [token];
+                chunks.slice(0, 5).forEach(chunk => syllables.push({ text: chunk, word: token, vowel: chunk.match(/[aeiouy]/)?.[0] || 'a' }));
+            });
+            let cursor = audio.currentTime + 0.06;
+            let melodyStep = Math.floor(Math.random() * scale.length);
+            syllables.slice(0, 180).forEach((syllable, index) => {
+                if (syllable.pause) { cursor += syllable.duration; return; }
+                melodyStep = index === 0 ? melodyStep : Math.max(0, Math.min(scale.length - 1, melodyStep + Math.floor(Math.random() * 5) - 2));
+                const midi = 60 + voicePitch + scale[melodyStep] + (index % 9 > 5 ? 12 : 0);
+                const frequency = 440 * Math.pow(2, (midi - 69) / 12);
+                const duration = tempo * (syllable.text.length > 3 ? 1.15 : 0.9);
+                const oscillator = audio.createOscillator();
+                const envelope = audio.createGain();
+                const lowpass = audio.createBiquadFilter();
+                const formant = audio.createBiquadFilter();
+                const vowelFormants = { a: [850, 1500], e: [530, 1850], i: [300, 2200], o: [500, 1000], u: [350, 800], y: [400, 1900] }[syllable.vowel];
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(frequency, cursor);
+                oscillator.frequency.linearRampToValueAtTime(frequency * 1.015, cursor + duration * 0.55);
+                lowpass.type = 'lowpass'; lowpass.frequency.value = 3200;
+                formant.type = 'peaking'; formant.frequency.value = vowelFormants[0]; formant.Q.value = 1.4; formant.gain.value = 7;
+                envelope.gain.setValueAtTime(0.001, cursor);
+                envelope.gain.linearRampToValueAtTime(0.8, cursor + 0.035);
+                envelope.gain.setValueAtTime(0.65, cursor + duration * 0.7);
+                envelope.gain.linearRampToValueAtTime(0.001, cursor + duration);
+                oscillator.connect(formant); formant.connect(lowpass); lowpass.connect(envelope); envelope.connect(master);
+                oscillator.start(cursor); oscillator.stop(cursor + duration + 0.02);
+                cursor += duration;
+            });
+            if (status) status.textContent = `Singing ${syllables.filter(part => !part.pause).length} lyric syllables in a ${style.toLowerCase()} melody.`;
+            window.setTimeout(() => { audio.close(); if (status) status.textContent = 'Performance finished.'; }, Math.max(200, (cursor - audio.currentTime) * 1000 + 200));
         }
 
         function releaseSong() {
