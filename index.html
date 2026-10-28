@@ -102,6 +102,7 @@
                     <span id="current-location-tag" class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                     <span id="header-planet-name">Tomodachi Island (Earth)</span>
                 </p>
+                <p id="header-week-label" class="text-[10px] font-bold text-emerald-300" aria-live="polite">Week 1</p>
             </div>
         </div>
         <div class="flex items-center gap-2">
@@ -162,6 +163,7 @@
                         </div>
                     </div>
                 </div>
+                <p id="storm-track-label" class="mb-3 rounded-lg bg-slate-900/60 px-3 py-2 text-[10px] text-slate-300">No storm system is currently threatening the island.</p>
 
                 <!-- Interactive Animated Hurricane Radar Map -->
                 <div class="relative w-full h-64 bg-slate-900 rounded-xl overflow-hidden border border-slate-800 shadow-inner flex items-center justify-center">
@@ -208,7 +210,7 @@
                         </div>
                         <div class="text-right">
                             <p class="text-[10px] text-slate-400 uppercase tracking-wider">Current Week</p>
-                            <p id="current-week-label" class="text-lg font-extrabold text-indigo-300">Week 1</p>
+                            <p id="current-week-label" class="text-lg font-extrabold text-indigo-300" aria-live="polite">Week 1</p>
                         </div>
                     </div>
 
@@ -555,6 +557,9 @@
             </form>
             <form onsubmit="createCustomPhrase(event)" class="glass-card rounded-xl p-3 space-y-2">
                 <h3 class="text-sm font-bold">Phrase Maker</h3><input id="maker-phrase-text" required maxlength="100" placeholder="A saying or conversation starter" class="maker-input"><select id="maker-phrase-category" class="maker-input"><option>Greeting</option><option>Friendship</option><option>Romance</option><option>Dream</option><option>Funny</option></select><button class="maker-submit">Add Phrase</button>
+            </form>
+            <form onsubmit="createCustomActivity(event)" class="glass-card rounded-xl p-3 space-y-2">
+                <h3 class="text-sm font-bold">Activity Maker</h3><input id="maker-activity-name" required maxlength="36" placeholder="Activity name" class="maker-input"><div class="grid grid-cols-2 gap-2"><select id="maker-activity-type" class="maker-input"><option>Music</option><option>Sports</option><option>Crafts</option><option>Nature</option><option>Cooking</option><option>Study group</option><option>Festival</option></select><select id="maker-activity-benefit" class="maker-input"><option>Happiness</option><option>Health</option><option>Friendship</option><option>Stress relief</option><option>Creativity</option></select></div><select id="maker-activity-recipient" class="maker-input" aria-label="Who joins this activity"></select><button class="maker-submit">Create Activity</button>
             </form>
             <form onsubmit="createCustomPlanet(event)" class="glass-card rounded-xl p-3 space-y-2">
                 <h3 class="text-sm font-bold">Planet Maker</h3><div class="grid grid-cols-2 gap-2"><input id="maker-planet-name" required maxlength="32" placeholder="Planet name" class="maker-input"><input id="maker-planet-subtitle" maxlength="40" placeholder="Subtitle" class="maker-input"><input id="maker-planet-atmosphere" maxlength="40" placeholder="Atmosphere" class="maker-input"><select id="maker-planet-gravity" class="maker-input"><option>Earth-like gravity</option><option>Low gravity</option><option>High gravity</option><option>Variable gravity</option></select><select id="maker-planet-climate" class="maker-input"><option>Temperate</option><option>Oceanic</option><option>Arid</option><option>Frozen</option><option>Tropical</option><option>Artificial habitat</option></select><input id="maker-planet-event" maxlength="50" placeholder="Local event" class="maker-input"></div>
@@ -937,7 +942,7 @@
         }
 
         function ensureCustomState() {
-            for (const key of ['customItems', 'customFoods', 'customPhrases', 'worldStories']) {
+            for (const key of ['customItems', 'customFoods', 'customPhrases', 'customActivities', 'worldStories']) {
                 if (!Array.isArray(gameState[key])) gameState[key] = [];
             }
             if (!Array.isArray(gameState.eventLog)) gameState.eventLog = [];
@@ -945,6 +950,13 @@
             if (!Number.isFinite(Number(gameState.shelterLevel))) gameState.shelterLevel = 1;
             if (!Number.isFinite(Number(gameState.communityCareCount))) gameState.communityCareCount = 0;
             miiData.forEach(mii => {
+                if (mii.alive == null) mii.alive = true;
+                if (typeof mii.relationship !== 'string') mii.relationship = 'New Neighbor';
+                if (typeof mii.relationshipStage !== 'string') mii.relationshipStage = mii.age < 18 ? 'child' : 'single';
+                if (!Number.isFinite(Number(mii.friendship))) mii.friendship = 0;
+                if (!Number.isFinite(Number(mii.health))) mii.health = 70;
+                if (!Number.isFinite(Number(mii.happiness))) mii.happiness = 70;
+                if (!mii.genetics || typeof mii.genetics !== 'object') mii.genetics = {};
                 if (!Array.isArray(mii.children)) mii.children = [];
                 if (!Array.isArray(mii.parents)) mii.parents = [];
                 if (!Array.isArray(mii.milestones)) mii.milestones = [];
@@ -957,6 +969,7 @@
                     mii.partnerId = null;
                     if (['dating', 'married'].includes(mii.relationshipStage)) mii.relationshipStage = 'single';
                 }
+                if (mii.rivalId && !miiData.some(other => other.id === mii.rivalId && other.alive)) mii.rivalId = null;
                 if (mii.schoolProgress == null) mii.schoolProgress = Math.min(100, (Number(mii.schoolLevel) || 1) * 10);
                 if (!mii.schoolTrack) mii.schoolTrack = mii.education || 'General Studies';
                 if (mii.graduated == null) mii.graduated = Number(mii.age) >= 18;
@@ -994,6 +1007,8 @@
                 const planet = PLANETS.find(p => p.id === gameState.activePlanetId) || PLANETS[0];
                 headerPlanet.textContent = `${planet.name} • Week ${gameState.week}`;
             }
+            const headerWeek = document.getElementById('header-week-label');
+            if (headerWeek) headerWeek.textContent = `Week ${gameState.week} · ${getCalendar().season}`;
         }
 
         function recordLifeEvent(message) {
@@ -1441,6 +1456,7 @@
             const recipients = miiData.filter(mii => mii.alive).map(mii => `<option value="${Number(mii.id)}">${escapeHTML(mii.name)}</option>`).join('');
             document.getElementById('maker-item-recipient').innerHTML = recipients;
             document.getElementById('maker-food-recipient').innerHTML = recipients;
+            document.getElementById('maker-activity-recipient').innerHTML = recipients;
             renderMakerCollections();
         }
 
@@ -1487,6 +1503,18 @@
             event.target.reset(); renderMakerCollections(); persistGameSilently();
         }
 
+        function createCustomActivity(event) {
+            event.preventDefault();
+            gameState.customActivities.unshift({
+                name: document.getElementById('maker-activity-name').value.trim(),
+                type: document.getElementById('maker-activity-type').value,
+                benefit: document.getElementById('maker-activity-benefit').value,
+                recipientId: Number(document.getElementById('maker-activity-recipient').value),
+                sessions: 0
+            });
+            event.target.reset(); renderMakerCollections(); persistGameSilently();
+        }
+
         function createCustomPlanet(event) {
             event.preventDefault();
             const name = document.getElementById('maker-planet-name').value.trim();
@@ -1499,7 +1527,7 @@
             const container = document.getElementById('maker-collections');
             if (!container) return;
             const section = (title, items, buttonLabel, handler) => `<section class="glass-card rounded-xl p-3"><h3 class="mb-2 text-xs font-bold uppercase text-slate-400">${title}</h3>${items.length ? items.map((item, index) => `<div class="flex items-center justify-between gap-2 border-t border-slate-800 py-2"><div class="min-w-0"><p class="truncate text-xs font-semibold">${escapeHTML(item.name || item.text)}</p><p class="text-[10px] text-slate-400">${escapeHTML([item.type, item.effect || item.favorite, item.rarity || item.quality, item.category].filter(Boolean).join(' · '))}</p></div>${buttonLabel ? `<button onclick="${handler}(${index})" class="shrink-0 rounded bg-slate-800 px-2 py-1 text-[10px] font-bold">${buttonLabel}</button>` : ''}</div>`).join('') : '<p class="text-[10px] text-slate-500">Nothing created yet.</p>'}</section>`;
-            container.innerHTML = section('Custom items', gameState.customItems, 'Use', 'useMakerItem') + section('Custom food', gameState.customFoods, 'Serve', 'useMakerFood') + section('Phrases', gameState.customPhrases, '', '');
+            container.innerHTML = section('Custom items', gameState.customItems, 'Use', 'useMakerItem') + section('Custom food', gameState.customFoods, 'Serve', 'useMakerFood') + section('Activities', gameState.customActivities, 'Do', 'doCustomActivity') + section('Phrases', gameState.customPhrases, '', '');
         }
 
         function useMakerItem(index) {
@@ -1525,6 +1553,21 @@
             recordLifeEvent(`${mii.name} shared a serving of ${food.name}.`);
             if (food.servings <= 0) gameState.customFoods.splice(index, 1);
             renderMakerCollections(); renderLifeOverview(); persistGameSilently();
+        }
+
+        function doCustomActivity(index) {
+            const activity = gameState.customActivities[index];
+            const mii = miiData.find(person => person.id === activity?.recipientId && person.alive);
+            if (!activity || !mii) return;
+            const benefit = activity.benefit;
+            if (benefit === 'Happiness') mii.happiness = Math.min(100, Number(mii.happiness || 70) + 10);
+            if (benefit === 'Health') mii.health = Math.min(100, Number(mii.health || 70) + 6);
+            if (benefit === 'Friendship') mii.friendship = Math.min(100, Number(mii.friendship || 0) + 10);
+            if (benefit === 'Stress relief') mii.stress = Math.max(0, Number(mii.stress || 0) - 12);
+            if (benefit === 'Creativity') mii.level = Math.min(100, Number(mii.level || 1) + 2);
+            activity.sessions = Number(activity.sessions || 0) + 1;
+            recordLifeEvent(`${mii.name} joined ${activity.name}, a ${activity.type.toLowerCase()} activity.`);
+            renderMakerCollections(); renderLifeOverview(); renderOutdoorScene(); persistGameSilently();
         }
 
         function toggleAutoRun() {
@@ -1910,10 +1953,15 @@
             if (!storm || storm.lastImpactWeek === gameState.week) return;
             storm.lastImpactWeek = gameState.week;
             const shelterLevel = Math.max(1, Math.min(5, Number(gameState.shelterLevel) || 1));
-            const repairCost = Math.max(0, Number(storm.category || 1) * 12000 - (shelterLevel - 1) * 9000);
+            const landfall = Boolean(storm.landfall && Number(storm.trackStage || 0) >= 2);
+            const repairCost = landfall ? Math.max(0, Math.max(1, Number(storm.category) || 1) * 18000 - (shelterLevel - 1) * 12000) : 0;
             gameState.netWorth = Math.max(0, gameState.netWorth - repairCost);
-            gameState.townMood = Math.max(35, gameState.townMood - Math.max(0, 5 - shelterLevel));
-            gameState.eventLog.unshift(`${storm.kind} ${storm.name} passed through. Residents took shelter; repairs cost ${formatCurrency(repairCost)}. No residents were lost.`);
+            gameState.townMood = Math.max(35, gameState.townMood - (landfall ? Math.max(0, 8 - shelterLevel) : 1));
+            if (landfall) {
+                miiData.filter(mii => mii.alive).forEach(mii => { mii.stress = Math.min(100, Number(mii.stress || 0) + 2); });
+            }
+            const impact = landfall ? 'made landfall' : 'passed offshore';
+            gameState.eventLog.unshift(`${storm.kind} ${storm.name} ${impact}. Residents took shelter; repairs cost ${formatCurrency(repairCost)}. No residents were lost.`);
             gameState.eventLog = gameState.eventLog.slice(0, 5);
         }
 
@@ -1946,6 +1994,19 @@
                 events.push(() => {
                     mii.happiness = Math.min(100, Number(mii.happiness || 70) + 4);
                     return `${mii.name} made time for a meaningful family moment.`;
+                });
+            }
+            if (gameState.customActivities.length) {
+                events.push(() => {
+                    const activity = gameState.customActivities[Math.floor(Math.random() * gameState.customActivities.length)];
+                    const participant = miiData.find(person => person.id === activity.recipientId && person.alive) || mii;
+                    if (activity.benefit === 'Happiness') participant.happiness = Math.min(100, Number(participant.happiness || 70) + 5);
+                    if (activity.benefit === 'Health') participant.health = Math.min(100, Number(participant.health || 70) + 3);
+                    if (activity.benefit === 'Friendship') participant.friendship = Math.min(100, Number(participant.friendship || 0) + 5);
+                    if (activity.benefit === 'Stress relief') participant.stress = Math.max(0, Number(participant.stress || 0) - 6);
+                    if (activity.benefit === 'Creativity') participant.level = Math.min(100, Number(participant.level || 1) + 1);
+                    activity.sessions = Number(activity.sessions || 0) + 1;
+                    return `${participant.name} joined the community ${activity.type.toLowerCase()} activity: ${activity.name}.`;
                 });
             }
             const message = events[Math.floor(Math.random() * events.length)]();
@@ -2143,6 +2204,7 @@
         }
 
         function advanceWeek(fastForward = false) {
+            ensureLifeSystemData();
             const weekDelta = fastForward ? 7 : 1;
             const incomeGain = (fastForward ? 240000 : 65000) + Math.round(Math.random() * (fastForward ? 400000 : 140000));
             const moodGain = 4 + Math.random() * (fastForward ? 12 : 8);
@@ -2158,7 +2220,9 @@
             ];
 
             const previousYear = getCalendar().year;
-            gameState.week += weekDelta;
+            gameState.week = Math.max(1, Number(gameState.week) || 1) + weekDelta;
+            renderWeekPanel();
+            updateHeaderStats();
             const yearsElapsed = Math.max(0, getCalendar().year - previousYear);
             if (yearsElapsed) {
                 miiData.forEach(mii => { if (mii.alive) mii.age += yearsElapsed; });
@@ -2209,7 +2273,9 @@
 
         function advanceYear() {
             const yearBoost = 52;
-            gameState.week += yearBoost;
+            gameState.week = Math.max(1, Number(gameState.week) || 1) + yearBoost;
+            renderWeekPanel();
+            updateHeaderStats();
             gameState.netWorth += 2400000 + Math.round(Math.random() * 1800000);
             gameState.billboardHits += 2 + Math.round(Math.random() * 3);
             gameState.awardsCount += 2;
@@ -2374,19 +2440,27 @@
 
         function randomizeStorm(force = false) {
             const calendar = getCalendar();
-            if (gameState.currentStorm && gameState.currentStorm.remainingWeeks > 1 && !force) {
-                gameState.currentStorm.remainingWeeks -= 1;
+            if (gameState.currentStorm && !force) {
+                const storm = gameState.currentStorm;
+                if (Number(storm.remainingWeeks || 0) > 1) {
+                    storm.remainingWeeks -= 1;
+                    storm.trackStage = Math.min(4, Number(storm.trackStage || 0) + 1);
+                    const intensityChange = Math.floor(Math.random() * 17) - 8;
+                    storm.windSpeed = Math.max(35, Math.min(175, Number(storm.windSpeed || 45) + intensityChange));
+                    storm.pressure = Math.max(900, Math.min(1005, Number(storm.pressure || 990) - Math.round(intensityChange * 0.6)));
+                    storm.track = ['organizing offshore', 'moving west-northwest', 'approaching the island chain', 'crossing the coast', 'weakening inland'][storm.trackStage];
+                    storm.category = storm.windSpeed >= 157 ? 5 : storm.windSpeed >= 130 ? 4 : storm.windSpeed >= 111 ? 3 : storm.windSpeed >= 96 ? 2 : storm.windSpeed >= 74 ? 1 : 0;
+                    storm.kind = storm.category > 0 ? 'Hurricane' : 'Tropical Storm';
+                    storm.categoryName = storm.category > 0 ? `Category ${storm.category} ${storm.category >= 3 ? 'Major Hurricane' : 'Hurricane'}` : 'Tropical Storm';
+                    gameState.currentWeather = { name: `${storm.kind} ${storm.name}`, temperature: 24, rainChance: 100 };
+                } else {
+                    gameState.currentStorm = null;
+                    gameState.currentWeather = { name: 'Post-storm showers', temperature: 23, rainChance: 55 };
+                }
                 renderSeasonalWeather();
                 return;
             }
             gameState.currentStorm = null;
-            const categories = [
-                { cat: 1, name: "Category 1 Tropical Cyclone", wind: 80, pres: 985, threat: "Moderate" },
-                { cat: 2, name: "Category 2 Tropical Cyclone", wind: 103, pres: 970, threat: "High" },
-                { cat: 3, name: "Category 3 Major Hurricane", wind: 122, pres: 950, threat: "Severe" },
-                { cat: 4, name: "Category 4 Major Hurricane", wind: 145, pres: 938, threat: "Extreme" },
-                { cat: 5, name: "Category 5 Major Hurricane", wind: 170, pres: 910, threat: "Catastrophic" }
-            ];
             const climate = [
                 { name: 'Clear skies', temperature: 25, rainChance: 8 },
                 { name: 'Passing showers', temperature: 22, rainChance: 65 },
@@ -2394,19 +2468,27 @@
                 { name: 'Cloudy', temperature: 17, rainChance: 35 },
                 { name: 'Warm and humid', temperature: 29, rainChance: 28 }
             ];
-            const stormChance = calendar.hurricaneSeason ? 0.18 : 0.015;
+            const stormChance = calendar.hurricaneSeason ? 0.09 : 0.005;
             if (force || Math.random() < stormChance) {
-                const tropicalStorm = Math.random() < 0.58;
-                const pick = categories[Math.floor(Math.random() * (tropicalStorm ? 2 : categories.length))];
+                const tropicalStorm = Math.random() < 0.55;
+                const category = tropicalStorm ? 0 : 1 + Math.floor(Math.random() * 5);
+                const windRanges = { 0: [40, 73], 1: [74, 95], 2: [96, 110], 3: [111, 129], 4: [130, 156], 5: [157, 175] };
+                const pressureRanges = { 0: [985, 1000], 1: [980, 985], 2: [965, 979], 3: [945, 964], 4: [920, 944], 5: [900, 919] };
+                const categoryNames = { 0: 'Tropical Storm', 1: 'Category 1 Hurricane', 2: 'Category 2 Hurricane', 3: 'Category 3 Major Hurricane', 4: 'Category 4 Major Hurricane', 5: 'Category 5 Major Hurricane' };
+                const range = windRanges[category];
+                const pressureRange = pressureRanges[category];
                 gameState.currentStorm = {
                     name: pickGeneValue(PRESET_STORM_NAMES, 'Saile'),
                     kind: tropicalStorm ? 'Tropical Storm' : 'Hurricane',
-                    category: pick.cat,
-                    categoryName: pick.name,
-                    windSpeed: pick.wind,
-                    pressure: pick.pres,
-                    threat: pick.threat,
-                    remainingWeeks: 1 + Math.floor(Math.random() * 3)
+                    category,
+                    categoryName: categoryNames[category],
+                    windSpeed: range[0] + Math.floor(Math.random() * (range[1] - range[0] + 1)),
+                    pressure: pressureRange[0] + Math.floor(Math.random() * (pressureRange[1] - pressureRange[0] + 1)),
+                    threat: category >= 4 ? 'Extreme' : category >= 2 ? 'High' : 'Moderate',
+                    remainingWeeks: 3 + Math.floor(Math.random() * 3),
+                    trackStage: 0,
+                    landfall: Math.random() < (category >= 3 ? 0.55 : 0.3),
+                    track: 'organizing offshore'
                 };
                 gameState.currentWeather = { name: `${gameState.currentStorm.kind} ${gameState.currentStorm.name}`, temperature: 24, rainChance: 100 };
             } else {
@@ -2436,9 +2518,11 @@
             const wind = document.getElementById('storm-wind-speed');
             const pressure = document.getElementById('storm-pressure');
             const threat = document.getElementById('storm-threat');
+            const track = document.getElementById('storm-track-label');
             if (wind) wind.textContent = storm ? `${storm.windSpeed} mph` : `${Math.round(normal.temperature * 1.8 + 32)}°F`;
             if (pressure) pressure.textContent = storm ? `${storm.pressure} mbar` : `${normal.rainChance}% rain`;
             if (threat) threat.textContent = storm ? storm.threat : 'Low';
+            if (track) track.textContent = storm ? `${storm.name}: ${storm.track || 'organizing offshore'} · ${storm.landfall ? 'possible landfall' : 'forecast to remain offshore'} · ${storm.remainingWeeks} week(s) tracked` : `No active storm · ${normal.name} · ${normal.rainChance}% rain chance`;
         }
 
         // -------------------------------------------------------------
