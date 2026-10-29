@@ -114,6 +114,7 @@
             <button onclick="toggleMusicPlayerModal()" class="w-8 h-8 rounded-full bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center text-indigo-300 hover:bg-indigo-600 hover:text-white transition-all">
                 <i data-lucide="music" class="w-4 h-4"></i>
             </button>
+            <button onclick="restartGame()" title="Restart game" aria-label="Restart game" class="w-8 h-8 rounded-full bg-rose-900/50 border border-rose-500/30 flex items-center justify-center text-rose-300 hover:bg-rose-700 transition-all"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>
         </div>
     </header>
 
@@ -245,6 +246,10 @@
                     <div class="mt-2 flex items-center justify-between rounded-xl bg-slate-900/80 border border-slate-800 p-2.5">
                         <div><p class="text-[10px] uppercase text-slate-400 font-bold">Automatic simulation</p><p id="auto-run-status" class="text-[10px] text-slate-300">Paused</p></div>
                         <button id="auto-run-button" onclick="toggleAutoRun()" class="px-3 py-1.5 bg-slate-800 hover:bg-emerald-700 text-xs font-bold rounded-lg">Start</button>
+                    </div>
+                    <div class="mt-2 grid grid-cols-2 gap-2 rounded-xl bg-slate-900/80 border border-slate-800 p-2.5 text-[10px]">
+                        <label class="flex items-center gap-2"><input id="auto-release-toggle" type="checkbox" onchange="setAutomation('music', this.checked)" class="accent-emerald-500"> Auto-release music</label>
+                        <label class="flex items-center gap-2"><input id="auto-career-toggle" type="checkbox" onchange="setAutomation('careerReview', this.checked)" class="accent-emerald-500"> Auto career choices</label>
                     </div>
                     <div class="grid grid-cols-2 gap-2 mt-2"><button onclick="saveGame()" class="py-2 rounded-lg bg-slate-800 text-xs font-bold hover:bg-slate-700">Save Game</button><button onclick="loadGame()" class="py-2 rounded-lg bg-slate-800 text-xs font-bold hover:bg-slate-700">Load Game</button></div>
                     <div class="grid grid-cols-2 gap-2 mt-2"><button onclick="communityCare()" class="py-2 rounded-lg bg-rose-900/80 text-xs font-bold hover:bg-rose-800">Community Care · $25K</button><button onclick="upgradeShelters()" class="py-2 rounded-lg bg-cyan-900/80 text-xs font-bold hover:bg-cyan-800">Upgrade Shelters</button></div>
@@ -423,7 +428,7 @@
             <!-- Chart Switcher Tabs -->
             <div class="flex border-b border-slate-800">
                 <button onclick="switchChartTab('hot100')" id="chart-tab-hot100" class="flex-1 py-2 text-xs font-bold text-center border-b-2 border-indigo-500 text-indigo-400">Hot 100 Singles</button>
-                <button onclick="switchChartTab('bb200')" id="chart-tab-bb200" class="flex-1 py-2 text-xs font-bold text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200">Billboard 200 Albums</button>
+                <button onclick="switchChartTab('bb200')" id="chart-tab-bb200" class="flex-1 py-2 text-xs font-bold text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200">Albums</button>
             </div>
 
             <!-- Chart List Container -->
@@ -447,7 +452,8 @@
                 <!-- Song / Album Form -->
                 <div class="space-y-3">
                     <div>
-                        <label class="text-[11px] font-bold text-slate-300 uppercase">Track / Album Title</label>
+                        <label class="text-[11px] font-bold text-slate-300 uppercase">Release Type & Title</label>
+                        <select id="release-type-select" onchange="document.getElementById('release-action-label').textContent=this.value==='album'?'Release Album':'Release Single'" class="maker-input mt-1"><option value="single">Single</option><option value="album">Album</option></select>
                         <input type="text" id="song-title-input" placeholder="e.g. Oire's Stormy Nights" class="w-full mt-1 px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
                     </div>
 
@@ -469,6 +475,19 @@
                                 <option>Hyperpop</option>
                             </select>
                         </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <select id="song-mood-select" class="maker-input"><option>Hopeful</option><option>Playful</option><option>Heartbroken</option><option>Dreamy</option><option>Triumphant</option><option>Restless</option></select>
+                        <select id="song-instrument-select" class="maker-input"><option>Synths</option><option>Piano</option><option>Guitar</option><option>Strings</option><option>Hand drums</option><option>Orchestral</option></select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <select id="song-album-tracks" class="maker-input"><option value="6">6 tracks</option><option value="8">8 tracks</option><option value="10">10 tracks</option><option value="12">12 tracks</option></select>
+                        <button onclick="generateCoverPreview()" class="rounded-lg bg-fuchsia-800 hover:bg-fuchsia-700 text-xs font-bold">Generate cover</button>
+                    </div>
+                    <div id="cover-preview-wrap" class="hidden items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/70 p-2">
+                        <img id="cover-preview" alt="Generated music cover preview" class="h-24 w-24 rounded-lg object-cover">
+                        <div><p class="text-xs font-bold">Release artwork</p><p class="text-[10px] text-slate-400">Generated from your title, genre, and mood.</p></div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
@@ -498,7 +517,7 @@
                             <i data-lucide="play" class="w-4 h-4"></i> Preview Vocal Synth
                         </button>
                         <button onclick="releaseSong()" class="py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5">
-                            <i data-lucide="upload-cloud" class="w-4 h-4"></i> Release Single
+                            <i data-lucide="upload-cloud" class="w-4 h-4"></i> <span id="release-action-label">Release Single</span>
                         </button>
                     </div>
                     <p id="song-performance-status" class="min-h-4 text-[10px] text-emerald-300" aria-live="polite"></p>
@@ -525,6 +544,11 @@
                 <h2 class="text-lg font-black">Jobs & Careers</h2><p class="text-xs text-slate-400">Roles, experience, promotions, and retirement</p>
             </div>
             <div id="jobs-tab-content" class="space-y-2"></div>
+        </section>
+
+        <section id="tab-games" class="tab-content space-y-4 hidden">
+            <div class="glass-card rounded-2xl p-4 border border-slate-700/60"><h2 class="text-lg font-black">Island Mini-Games</h2><p class="text-xs text-slate-400">Quick neighborhood trivia with small mood and friendship rewards</p></div>
+            <div class="glass-card rounded-xl border border-slate-800 p-4"><div class="flex justify-between"><span class="text-xs font-bold">Neighborhood Quiz</span><span id="mini-game-score" class="text-xs text-amber-300">Best: 0</span></div><p id="mini-game-prompt" class="my-4 min-h-12 text-sm text-slate-200">Start a round to test your island knowledge.</p><div id="mini-game-options" class="grid grid-cols-2 gap-2"></div><p id="mini-game-feedback" class="mt-3 min-h-5 text-xs text-emerald-300" aria-live="polite"></p><button id="mini-game-start" onclick="startMiniGame()" class="mt-3 w-full rounded-lg bg-amber-700 py-2 text-xs font-bold hover:bg-amber-600">Start 5-question round</button></div>
         </section>
 
         <section id="tab-outdoors" class="tab-content space-y-4 hidden">
@@ -561,6 +585,10 @@
             <form onsubmit="createCustomActivity(event)" class="glass-card rounded-xl p-3 space-y-2">
                 <h3 class="text-sm font-bold">Activity Maker</h3><input id="maker-activity-name" required maxlength="36" placeholder="Activity name" class="maker-input"><div class="grid grid-cols-2 gap-2"><select id="maker-activity-type" class="maker-input"><option>Music</option><option>Sports</option><option>Crafts</option><option>Nature</option><option>Cooking</option><option>Study group</option><option>Festival</option></select><select id="maker-activity-benefit" class="maker-input"><option>Happiness</option><option>Health</option><option>Friendship</option><option>Stress relief</option><option>Creativity</option></select></div><select id="maker-activity-recipient" class="maker-input" aria-label="Who joins this activity"></select><button class="maker-submit">Create Activity</button>
             </form>
+            <form onsubmit="createCustomOutfit(event)" class="glass-card rounded-xl p-3 space-y-2"><h3 class="text-sm font-bold">Outfit Maker</h3><div class="grid grid-cols-2 gap-2"><input id="maker-outfit-name" required maxlength="32" placeholder="Outfit name" class="maker-input"><select id="maker-outfit-style" class="maker-input"><option>Casual</option><option>Formal</option><option>Festival</option><option>Sport</option><option>Sleepwear</option><option>Space suit</option></select></div><select id="maker-outfit-recipient" class="maker-input"></select><button class="maker-submit">Create Outfit</button></form>
+            <form onsubmit="createCustomPet(event)" class="glass-card rounded-xl p-3 space-y-2"><h3 class="text-sm font-bold">Pet Maker</h3><div class="grid grid-cols-2 gap-2"><input id="maker-pet-name" required maxlength="24" placeholder="Pet name" class="maker-input"><select id="maker-pet-kind" class="maker-input"><option>Cat</option><option>Dog</option><option>Bird</option><option>Rabbit</option><option>Fantasy companion</option></select></div><select id="maker-pet-recipient" class="maker-input"></select><button class="maker-submit">Adopt Pet</button></form>
+            <form onsubmit="createCustomHome(event)" class="glass-card rounded-xl p-3 space-y-2"><h3 class="text-sm font-bold">Home Maker</h3><div class="grid grid-cols-2 gap-2"><input id="maker-home-name" required maxlength="32" placeholder="Home name" class="maker-input"><select id="maker-home-style" class="maker-input"><option>Coastal cottage</option><option>City loft</option><option>Garden home</option><option>Studio apartment</option><option>Lunar habitat</option><option>Sky villa</option></select></div><select id="maker-home-recipient" class="maker-input"></select><button class="maker-submit">Create Home</button></form>
+            <form onsubmit="createCustomEvent(event)" class="glass-card rounded-xl p-3 space-y-2"><h3 class="text-sm font-bold">Community Event Maker</h3><div class="grid grid-cols-2 gap-2"><input id="maker-event-name" required maxlength="36" placeholder="Event name" class="maker-input"><select id="maker-event-type" class="maker-input"><option>Festival</option><option>Fundraiser</option><option>Market</option><option>Concert</option><option>Sports day</option></select></div><select id="maker-event-reward" class="maker-input"><option>Town happiness</option><option>Friendship</option><option>Community funds</option><option>Health and wellness</option></select><button class="maker-submit">Schedule Event</button></form>
             <form onsubmit="createCustomPlanet(event)" class="glass-card rounded-xl p-3 space-y-2">
                 <h3 class="text-sm font-bold">Planet Maker</h3><div class="grid grid-cols-2 gap-2"><input id="maker-planet-name" required maxlength="32" placeholder="Planet name" class="maker-input"><input id="maker-planet-subtitle" maxlength="40" placeholder="Subtitle" class="maker-input"><input id="maker-planet-atmosphere" maxlength="40" placeholder="Atmosphere" class="maker-input"><select id="maker-planet-gravity" class="maker-input"><option>Earth-like gravity</option><option>Low gravity</option><option>High gravity</option><option>Variable gravity</option></select><select id="maker-planet-climate" class="maker-input"><option>Temperate</option><option>Oceanic</option><option>Arid</option><option>Frozen</option><option>Tropical</option><option>Artificial habitat</option></select><input id="maker-planet-event" maxlength="50" placeholder="Local event" class="maker-input"></div>
                 <button class="maker-submit">Create Unlocked Planet</button>
@@ -597,6 +625,7 @@
             <button onclick="switchTab('jobs')" id="nav-jobs" class="nav-btn min-w-[60px] shrink-0 flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400"><i data-lucide="briefcase-business" class="w-5 h-5"></i><span class="text-[10px] font-bold mt-1">Jobs</span></button>
             <button onclick="switchTab('outdoors')" id="nav-outdoors" class="nav-btn min-w-[60px] shrink-0 flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400"><i data-lucide="trees" class="w-5 h-5"></i><span class="text-[10px] font-bold mt-1">Outside</span></button>
             <button onclick="switchTab('makers')" id="nav-makers" class="nav-btn min-w-[60px] shrink-0 flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400"><i data-lucide="wand-sparkles" class="w-5 h-5"></i><span class="text-[10px] font-bold mt-1">Makers</span></button>
+            <button onclick="switchTab('games')" id="nav-games" class="nav-btn min-w-[60px] shrink-0 flex flex-col items-center justify-center py-1.5 rounded-xl text-slate-400"><i data-lucide="gamepad-2" class="w-5 h-5"></i><span class="text-[10px] font-bold mt-1">Games</span></button>
         </div>
     </nav>
 
@@ -778,6 +807,9 @@
                 income: 18000 + Math.floor(Math.random() * 42000),
                 careerLevel: 1 + Math.floor(Math.random() * 4),
                 careerTitle: job,
+                pets: [],
+                homeId: null,
+                outfits: [],
                 schoolLevel: age < 18 ? 1 : 4,
                 lifeStage,
                 retirementAge: 65,
@@ -909,6 +941,14 @@
             customItems: [],
             customFoods: [],
             customPhrases: [],
+            customActivities: [],
+            customOutfits: [],
+            customPets: [],
+            customHomes: [],
+            customEvents: [],
+            albums: [],
+            miniGameBest: 0,
+            automation: { music: false, careerReview: false },
             hot100Chart: [
                 { rank: 1, title: "Starlight Echoes", artist: "Fifi (Zena Joplin)", views: "4.2M", explicit: false },
                 { rank: 2, title: "Culpa's Cyclone", artist: "Culpa ft. Oire", views: "3.8M", explicit: true },
@@ -922,6 +962,7 @@
         const PRESET_STORM_NAMES = ["Oire", "Culpa", "Saile", "Zephyr", "Vortex Prime", "Hyper-Zena", "Katrina X"];
         let autoRunTimer = null;
         let outdoorActivityTimer = null;
+        let miniGameSession = null;
 
         function escapeHTML(value) {
             return String(value ?? '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
@@ -942,9 +983,13 @@
         }
 
         function ensureCustomState() {
-            for (const key of ['customItems', 'customFoods', 'customPhrases', 'customActivities', 'worldStories']) {
+            for (const key of ['customItems', 'customFoods', 'customPhrases', 'customActivities', 'customOutfits', 'customPets', 'customHomes', 'customEvents', 'albums', 'worldStories']) {
                 if (!Array.isArray(gameState[key])) gameState[key] = [];
             }
+            if (!gameState.automation || typeof gameState.automation !== 'object') gameState.automation = { music: false, careerReview: false };
+            gameState.automation.music = Boolean(gameState.automation.music);
+            gameState.automation.careerReview = Boolean(gameState.automation.careerReview);
+            if (!Number.isFinite(Number(gameState.miniGameBest))) gameState.miniGameBest = 0;
             if (!Array.isArray(gameState.eventLog)) gameState.eventLog = [];
             if (!Array.isArray(gameState.lifeEvents)) gameState.lifeEvents = [];
             if (!Number.isFinite(Number(gameState.shelterLevel))) gameState.shelterLevel = 1;
@@ -963,6 +1008,8 @@
                 if (!Array.isArray(mii.exPartners)) mii.exPartners = [];
                 if (!Array.isArray(mii.exFriends)) mii.exFriends = [];
                 if (!Array.isArray(mii.relationshipHistory)) mii.relationshipHistory = [];
+                if (!Array.isArray(mii.pets)) mii.pets = [];
+                if (!Array.isArray(mii.outfits)) mii.outfits = [];
                 if (!Number.isFinite(Number(mii.age))) mii.age = 18;
                 mii.age = Math.max(0, Math.min(120, Number(mii.age)));
                 if (mii.partnerId && !miiData.some(other => other.id === mii.partnerId && other.alive)) {
@@ -1413,6 +1460,7 @@
                 <article class="glass-card rounded-xl border border-slate-800 p-3">
                     <div class="flex items-center justify-between"><div><h3 class="text-sm font-bold">${escapeHTML(mii.name)}</h3><p class="text-[10px] text-emerald-300">${escapeHTML(getMiiCareerTitle(mii))} · Level ${Number(mii.careerLevel || 1)}</p></div><span class="text-[10px] text-slate-300">${formatCurrency(Number(mii.income || 0))}/yr</span></div>
                     <div class="mt-2 grid grid-cols-[1fr_auto] gap-2"><select onchange="setMiiJob(${Number(mii.id)}, this.value)" class="maker-input" ${mii.retired ? 'disabled' : ''}>${LIFE_JOBS.map(job => `<option ${mii.job === job ? 'selected' : ''}>${escapeHTML(job)}</option>`).join('')}<option ${mii.retired ? 'selected' : ''}>Retired</option></select><span class="self-center text-[10px] text-slate-400">${escapeHTML(mii.education || 'Experience')}</span></div>
+                    <div class="mt-2 grid grid-cols-[1fr_auto] gap-2"><select id="career-choice-${Number(mii.id)}" class="maker-input"><option value="train">Professional training</option><option value="overtime">Take overtime</option><option value="mentor">Mentor a coworker</option><option value="rest">Take a recovery day</option><option value="network">Attend a networking event</option></select><button onclick="applyCareerDecision(${Number(mii.id)}, document.getElementById('career-choice-${Number(mii.id)}').value)" class="rounded-lg bg-emerald-800 px-3 text-[10px] font-bold hover:bg-emerald-700">Choose</button></div>
                 </article>`).join('') || '<p class="text-xs text-slate-400">No working-age Miis are available.</p>';
         }
 
@@ -1426,6 +1474,87 @@
             renderJobsTab();
             renderLifeOverview();
             persistGameSilently();
+        }
+
+        function applyCareerDecision(miiId, choice) {
+            const mii = miiData.find(person => person.id === miiId && person.alive);
+            if (!mii || mii.age < 18 || mii.retired) return;
+            const outcomes = {
+                train: () => { mii.careerLevel = Math.min(10, Number(mii.careerLevel || 1) + 1); mii.stress = Math.min(100, Number(mii.stress || 0) + 4); mii.income = Number(mii.income || 0) + 1200; return 'completed professional training'; },
+                overtime: () => { mii.income = Number(mii.income || 0) + 3000; mii.stress = Math.min(100, Number(mii.stress || 0) + 10); return 'worked overtime for extra pay'; },
+                mentor: () => { mii.friendship = Math.min(100, Number(mii.friendship || 0) + 5); mii.happiness = Math.min(100, Number(mii.happiness || 70) + 3); return 'mentored a colleague'; },
+                rest: () => { mii.stress = Math.max(0, Number(mii.stress || 0) - 14); mii.health = Math.min(100, Number(mii.health || 70) + 5); return 'took a recovery day'; },
+                network: () => { mii.careerLevel = Math.min(10, Number(mii.careerLevel || 1) + 1); mii.friendship = Math.min(100, Number(mii.friendship || 0) + 3); return 'made a useful professional connection'; }
+            };
+            if (!outcomes[choice]) return;
+            const description = outcomes[choice]();
+            mii.careerTitle = getMiiCareerTitle(mii);
+            recordLifeEvent(`${mii.name} ${description}.`);
+            renderJobsTab(); renderLifeOverview(); persistGameSilently();
+        }
+
+        function startMiniGame() {
+            miniGameSession = { round: 0, score: 0, answer: null, options: [] };
+            document.getElementById('mini-game-feedback').textContent = '';
+            nextMiniGameQuestion();
+        }
+
+        function nextMiniGameQuestion() {
+            if (!miniGameSession) return;
+            if (miniGameSession.round >= 5) {
+                gameState.miniGameBest = Math.max(Number(gameState.miniGameBest || 0), miniGameSession.score);
+                gameState.townMood = Math.min(100, gameState.townMood + miniGameSession.score * 2);
+                gameState.netWorth += miniGameSession.score * 2500;
+                document.getElementById('mini-game-score').textContent = `Round: ${miniGameSession.score}/5 · Best: ${gameState.miniGameBest}`;
+                document.getElementById('mini-game-prompt').textContent = `Round complete: ${miniGameSession.score} correct. The neighborhood earned ${formatCurrency(miniGameSession.score * 2500)}.`;
+                document.getElementById('mini-game-options').innerHTML = '';
+                document.getElementById('mini-game-feedback').textContent = 'Rewards added to the town fund and mood.';
+                document.getElementById('mini-game-start').textContent = 'Play again';
+                document.getElementById('mini-game-start').disabled = false;
+                document.getElementById('mini-game-start').onclick = startMiniGame;
+                miniGameSession = null;
+                renderWeekPanel(); updateHeaderStats(); persistGameSilently();
+                return;
+            }
+            const residents = miiData.filter(mii => mii.alive);
+            if (!residents.length) return;
+            const mii = residents[Math.floor(Math.random() * residents.length)];
+            const questionType = Math.floor(Math.random() * 3);
+            let question, answer, choices;
+            if (questionType === 0) {
+                question = `Which month is ${mii.name}'s birthday?`;
+                answer = mii.birthdayMonth || 'Jan';
+                choices = [...new Set([answer, ...MONTH_NAMES.filter(month => month !== answer).sort(() => Math.random() - 0.5).slice(0, 3)])];
+            } else if (questionType === 1) {
+                question = `Which career belongs to ${mii.name}?`;
+                answer = mii.age < 18 ? 'Student' : mii.job || 'Artist';
+                choices = [...new Set([answer, ...LIFE_JOBS.filter(job => job !== answer).sort(() => Math.random() - 0.5).slice(0, 3)])];
+            } else {
+                question = `What life stage is ${mii.name} in?`;
+                answer = getAgeStage(mii.age);
+                choices = [...new Set([answer, 'child', 'teen', 'young adult', 'adult', 'elder'])].sort(() => Math.random() - 0.5).slice(0, 4);
+            }
+            miniGameSession.round += 1;
+            miniGameSession.answer = answer;
+            miniGameSession.options = choices.sort(() => Math.random() - 0.5);
+            document.getElementById('mini-game-score').textContent = `Question ${miniGameSession.round}/5 · Score ${miniGameSession.score}`;
+            document.getElementById('mini-game-prompt').textContent = question;
+            document.getElementById('mini-game-feedback').textContent = '';
+            document.getElementById('mini-game-options').innerHTML = miniGameSession.options.map((choice, index) => `<button onclick="answerMiniGame(${index})" class="rounded-lg border border-slate-700 bg-slate-900 p-2 text-xs hover:border-amber-400">${escapeHTML(choice)}</button>`).join('');
+            document.getElementById('mini-game-start').textContent = 'Round in progress';
+            document.getElementById('mini-game-start').disabled = true;
+        }
+
+        function answerMiniGame(choiceIndex) {
+            if (!miniGameSession) return;
+            const answer = miniGameSession.options[choiceIndex];
+            const correct = answer === miniGameSession.answer;
+            if (correct) miniGameSession.score += 1;
+            document.getElementById('mini-game-feedback').textContent = correct ? 'Correct! Nice island knowledge.' : `Not quite. The answer was ${miniGameSession.answer}.`;
+            document.getElementById('mini-game-options').innerHTML = '';
+            document.getElementById('mini-game-start').disabled = false;
+            document.getElementById('mini-game-start').textContent = miniGameSession.round >= 5 ? 'Show results' : 'Next question';
+            document.getElementById('mini-game-start').onclick = nextMiniGameQuestion;
         }
 
         function renderOutdoorScene() {
@@ -1457,6 +1586,9 @@
             document.getElementById('maker-item-recipient').innerHTML = recipients;
             document.getElementById('maker-food-recipient').innerHTML = recipients;
             document.getElementById('maker-activity-recipient').innerHTML = recipients;
+            document.getElementById('maker-outfit-recipient').innerHTML = recipients;
+            document.getElementById('maker-pet-recipient').innerHTML = recipients;
+            document.getElementById('maker-home-recipient').innerHTML = recipients;
             renderMakerCollections();
         }
 
@@ -1515,6 +1647,39 @@
             event.target.reset(); renderMakerCollections(); persistGameSilently();
         }
 
+        function createCustomOutfit(event) {
+            event.preventDefault();
+            const outfit = { id: Date.now(), name: document.getElementById('maker-outfit-name').value.trim(), style: document.getElementById('maker-outfit-style').value, recipientId: Number(document.getElementById('maker-outfit-recipient').value) };
+            gameState.customOutfits.unshift(outfit);
+            const mii = miiData.find(person => person.id === outfit.recipientId);
+            if (mii) mii.outfits.push(outfit.id);
+            event.target.reset(); renderMakerCollections(); persistGameSilently();
+        }
+
+        function createCustomPet(event) {
+            event.preventDefault();
+            const pet = { id: Date.now(), name: document.getElementById('maker-pet-name').value.trim(), kind: document.getElementById('maker-pet-kind').value, ownerId: Number(document.getElementById('maker-pet-recipient').value), bond: 10 };
+            gameState.customPets.unshift(pet);
+            const owner = miiData.find(person => person.id === pet.ownerId);
+            if (owner) { owner.pets.push(pet.id); owner.happiness = Math.min(100, Number(owner.happiness || 70) + 8); }
+            event.target.reset(); renderMakerCollections(); renderLifeOverview(); persistGameSilently();
+        }
+
+        function createCustomHome(event) {
+            event.preventDefault();
+            const home = { id: Date.now(), name: document.getElementById('maker-home-name').value.trim(), style: document.getElementById('maker-home-style').value, residentId: Number(document.getElementById('maker-home-recipient').value), comfort: 50 };
+            gameState.customHomes.unshift(home);
+            const resident = miiData.find(person => person.id === home.residentId);
+            if (resident) { resident.homeId = home.id; resident.happiness = Math.min(100, Number(resident.happiness || 70) + 5); }
+            event.target.reset(); renderMakerCollections(); renderLifeOverview(); persistGameSilently();
+        }
+
+        function createCustomEvent(event) {
+            event.preventDefault();
+            gameState.customEvents.unshift({ name: document.getElementById('maker-event-name').value.trim(), type: document.getElementById('maker-event-type').value, reward: document.getElementById('maker-event-reward').value, hosted: 0 });
+            event.target.reset(); renderMakerCollections(); persistGameSilently();
+        }
+
         function createCustomPlanet(event) {
             event.preventDefault();
             const name = document.getElementById('maker-planet-name').value.trim();
@@ -1526,8 +1691,8 @@
         function renderMakerCollections() {
             const container = document.getElementById('maker-collections');
             if (!container) return;
-            const section = (title, items, buttonLabel, handler) => `<section class="glass-card rounded-xl p-3"><h3 class="mb-2 text-xs font-bold uppercase text-slate-400">${title}</h3>${items.length ? items.map((item, index) => `<div class="flex items-center justify-between gap-2 border-t border-slate-800 py-2"><div class="min-w-0"><p class="truncate text-xs font-semibold">${escapeHTML(item.name || item.text)}</p><p class="text-[10px] text-slate-400">${escapeHTML([item.type, item.effect || item.favorite, item.rarity || item.quality, item.category].filter(Boolean).join(' · '))}</p></div>${buttonLabel ? `<button onclick="${handler}(${index})" class="shrink-0 rounded bg-slate-800 px-2 py-1 text-[10px] font-bold">${buttonLabel}</button>` : ''}</div>`).join('') : '<p class="text-[10px] text-slate-500">Nothing created yet.</p>'}</section>`;
-            container.innerHTML = section('Custom items', gameState.customItems, 'Use', 'useMakerItem') + section('Custom food', gameState.customFoods, 'Serve', 'useMakerFood') + section('Activities', gameState.customActivities, 'Do', 'doCustomActivity') + section('Phrases', gameState.customPhrases, '', '');
+            const section = (title, items, buttonLabel, handler) => `<section class="glass-card rounded-xl p-3"><h3 class="mb-2 text-xs font-bold uppercase text-slate-400">${title}</h3>${items.length ? items.map((item, index) => `<div class="flex items-center justify-between gap-2 border-t border-slate-800 py-2"><div class="min-w-0"><p class="truncate text-xs font-semibold">${escapeHTML(item.name || item.text)}</p><p class="text-[10px] text-slate-400">${escapeHTML([item.type, item.kind, item.style, item.effect || item.favorite, item.rarity || item.quality, item.category, item.reward].filter(Boolean).join(' · '))}</p></div>${buttonLabel ? `<button onclick="${handler}(${index})" class="shrink-0 rounded bg-slate-800 px-2 py-1 text-[10px] font-bold">${buttonLabel}</button>` : ''}</div>`).join('') : '<p class="text-[10px] text-slate-500">Nothing created yet.</p>'}</section>`;
+            container.innerHTML = section('Custom items', gameState.customItems, 'Use', 'useMakerItem') + section('Custom food', gameState.customFoods, 'Serve', 'useMakerFood') + section('Activities', gameState.customActivities, 'Do', 'doCustomActivity') + section('Outfits', gameState.customOutfits, 'Wear', 'wearCustomOutfit') + section('Pets', gameState.customPets, 'Play', 'playWithCustomPet') + section('Homes', gameState.customHomes, 'Relax', 'relaxAtCustomHome') + section('Community events', gameState.customEvents, 'Host', 'hostCustomEvent') + section('Phrases', gameState.customPhrases, '', '');
         }
 
         function useMakerItem(index) {
@@ -1570,6 +1735,50 @@
             renderMakerCollections(); renderLifeOverview(); renderOutdoorScene(); persistGameSilently();
         }
 
+        function wearCustomOutfit(index) {
+            const outfit = gameState.customOutfits[index];
+            const mii = miiData.find(person => person.id === outfit?.recipientId && person.alive);
+            if (!outfit || !mii) return;
+            mii.outfitId = outfit.id;
+            mii.happiness = Math.min(100, Number(mii.happiness || 70) + 4);
+            recordLifeEvent(`${mii.name} wore ${outfit.name} for a ${outfit.style.toLowerCase()} day.`);
+            renderMakerCollections(); renderLifeOverview(); persistGameSilently();
+        }
+
+        function playWithCustomPet(index) {
+            const pet = gameState.customPets[index];
+            const owner = miiData.find(person => person.id === pet?.ownerId && person.alive);
+            if (!pet || !owner) return;
+            pet.bond = Math.min(100, Number(pet.bond || 0) + 10);
+            owner.happiness = Math.min(100, Number(owner.happiness || 70) + 6);
+            owner.stress = Math.max(0, Number(owner.stress || 0) - 5);
+            recordLifeEvent(`${owner.name} spent time with ${pet.name}, their ${pet.kind.toLowerCase()} companion.`);
+            renderMakerCollections(); renderLifeOverview(); persistGameSilently();
+        }
+
+        function relaxAtCustomHome(index) {
+            const home = gameState.customHomes[index];
+            const resident = miiData.find(person => person.id === home?.residentId && person.alive);
+            if (!home || !resident) return;
+            home.comfort = Math.min(100, Number(home.comfort || 50) + 5);
+            resident.stress = Math.max(0, Number(resident.stress || 0) - 8);
+            resident.happiness = Math.min(100, Number(resident.happiness || 70) + 5);
+            recordLifeEvent(`${resident.name} relaxed at ${home.name} and felt more at home.`);
+            renderMakerCollections(); renderLifeOverview(); persistGameSilently();
+        }
+
+        function hostCustomEvent(index, manual = true) {
+            const townEvent = gameState.customEvents[index];
+            if (!townEvent) return;
+            townEvent.hosted = Number(townEvent.hosted || 0) + 1;
+            if (townEvent.reward === 'Town happiness') gameState.townMood = Math.min(100, gameState.townMood + 8);
+            if (townEvent.reward === 'Friendship') miiData.filter(mii => mii.alive).forEach(mii => { mii.friendship = Math.min(100, Number(mii.friendship || 0) + 2); });
+            if (townEvent.reward === 'Community funds') gameState.netWorth += 50000;
+            if (townEvent.reward === 'Health and wellness') miiData.filter(mii => mii.alive).forEach(mii => { mii.health = Math.min(100, Number(mii.health || 70) + 2); });
+            if (manual) recordLifeEvent(`The community hosted ${townEvent.name}, a ${townEvent.type.toLowerCase()} for local residents.`);
+            renderMakerCollections(); renderWeekPanel(); renderLifeOverview(); updateHeaderStats(); persistGameSilently();
+        }
+
         function toggleAutoRun() {
             const button = document.getElementById('auto-run-button');
             const status = document.getElementById('auto-run-status');
@@ -1583,6 +1792,13 @@
                 if (button) button.textContent = 'Pause';
                 if (status) status.textContent = 'One week every 5 seconds';
             }
+        }
+
+        function setAutomation(key, enabled) {
+            if (!['music', 'careerReview'].includes(key)) return;
+            if (!gameState.automation || typeof gameState.automation !== 'object') gameState.automation = {};
+            gameState.automation[key] = Boolean(enabled);
+            persistGameSilently();
         }
 
         function persistGameSilently() {
@@ -1628,6 +1844,10 @@
             if (shelterStatus) shelterStatus.textContent = `All residents safe · Level ${gameState.shelterLevel || 1}`;
             const restoreButton = document.getElementById('restore-residents-button');
             if (restoreButton) restoreButton.classList.toggle('hidden', miiData.some(mii => mii.alive));
+            const autoMusic = document.getElementById('auto-release-toggle');
+            const autoCareer = document.getElementById('auto-career-toggle');
+            if (autoMusic) autoMusic.checked = Boolean(gameState.automation?.music);
+            if (autoCareer) autoCareer.checked = Boolean(gameState.automation?.careerReview);
             renderSeasonalWeather();
         }
 
@@ -1810,9 +2030,9 @@
             const currentYear = getCalendar().year;
             for (const mii of livingMiis) {
                 const lastMortalityCheckYear = Number(mii.lastMortalityCheckYear || 0);
-                if (mii.age >= 100 && lastMortalityCheckYear < currentYear) {
+                if (mii.age >= 79 && lastMortalityCheckYear < currentYear) {
                     mii.lastMortalityCheckYear = currentYear;
-                    const mortalityChance = Math.min(0.08, (mii.age - 99) * 0.008 + (Number(mii.health || 70) < 30 ? 0.02 : 0));
+                    const mortalityChance = Math.min(0.25, 0.008 + (mii.age - 79) * 0.008 + (Number(mii.health || 70) < 30 ? 0.025 : 0));
                     if (Math.random() < mortalityChance) {
                     mii.alive = false;
                     mii.relationshipStage = 'passed away';
@@ -2009,6 +2229,13 @@
                     return `${participant.name} joined the community ${activity.type.toLowerCase()} activity: ${activity.name}.`;
                 });
             }
+            if (gameState.customEvents.length) {
+                events.push(() => {
+                    const townEvent = gameState.customEvents[Math.floor(Math.random() * gameState.customEvents.length)];
+                    hostCustomEvent(gameState.customEvents.indexOf(townEvent), false);
+                    return `${townEvent.type} day: ${townEvent.name} brought residents together.`;
+                });
+            }
             const message = events[Math.floor(Math.random() * events.length)]();
             gameState.eventLog.unshift(message);
             gameState.eventLog = gameState.eventLog.slice(0, 5);
@@ -2154,6 +2381,14 @@
             }
         }
 
+        function restartGame() {
+            if (!window.confirm('Restart the island? This erases the current save and creates a fresh roster.')) return;
+            if (autoRunTimer) clearInterval(autoRunTimer);
+            if (outdoorActivityTimer) clearInterval(outdoorActivityTimer);
+            localStorage.removeItem('tomodachi-life-save');
+            window.location.reload();
+        }
+
         function loadGame() {
             const raw = localStorage.getItem('tomodachi-life-save');
             if (!raw) {
@@ -2252,6 +2487,15 @@
             updateLifeSystems();
             processLifeSimEvents();
             processWeeklyCommunityEvent();
+            if (gameState.automation?.careerReview) {
+                const candidates = miiData.filter(mii => mii.alive && mii.age >= 18 && !mii.retired);
+                if (candidates.length) {
+                    const candidate = candidates[Math.floor(Math.random() * candidates.length)];
+                    const choices = ['train', 'overtime', 'mentor', 'rest', 'network'];
+                    applyCareerDecision(candidate.id, choices[Math.floor(Math.random() * choices.length)]);
+                }
+            }
+            if (gameState.automation?.music) autoReleaseWeeklyTrack();
             updateQuestProgress(fastForward ? 'fast' : 'week');
             randomizeStorm();
             processStormImpact();
@@ -2366,6 +2610,7 @@
             renderSeasonalWeather();
             initializeMakers();
             renderFamilyTab(); renderSchoolTab(); renderJobsTab(); renderOutdoorScene();
+            renderMiniGame();
             outdoorActivityTimer = setInterval(renderOutdoorScene, 3500);
 
             // Initialize Lucide icons
@@ -2401,6 +2646,7 @@
             if (tabId === 'family') renderFamilyTab();
             if (tabId === 'school') renderSchoolTab();
             if (tabId === 'jobs') renderJobsTab();
+            if (tabId === 'games') renderMiniGame();
         }
 
         // -------------------------------------------------------------
@@ -2656,11 +2902,36 @@
         // -------------------------------------------------------------
         // 8. BILLBOARD MUSIC INDUSTRY SIMULATION
         // -------------------------------------------------------------
+        function makeCoverDataUri(title, genre, mood) {
+            const palettes = {
+                Pop: ['#f97316', '#ec4899'], Synthwave: ['#0891b2', '#7c3aed'], 'Hip-Hop': ['#a16207', '#be123c'],
+                Rock: ['#334155', '#b91c1c'], 'Cosmic Disco': ['#0f766e', '#eab308'], Hyperpop: ['#db2777', '#2563eb']
+            };
+            const [start, end] = palettes[genre] || ['#0f766e', '#eab308'];
+            const safeTitle = escapeHTML(String(title).slice(0, 30));
+            const safeGenre = escapeHTML(String(genre).slice(0, 22));
+            const safeMood = escapeHTML(String(mood).slice(0, 22));
+            const art = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop stop-color="${start}"/><stop offset="1" stop-color="${end}"/></linearGradient><pattern id="p" width="34" height="34" patternUnits="userSpaceOnUse"><path d="M0 17H34M17 0V34" stroke="#fff" stroke-opacity=".12"/></pattern></defs><rect width="512" height="512" fill="url(#g)"/><rect width="512" height="512" fill="url(#p)"/><circle cx="365" cy="150" r="105" fill="#fff" fill-opacity=".17"/><path d="M-20 360Q110 250 245 350T550 310V540H-20Z" fill="#020617" fill-opacity=".42"/><text x="36" y="60" fill="#fff" font-family="sans-serif" font-size="18" font-weight="700" letter-spacing="3">${safeGenre.toUpperCase()}</text><text x="36" y="395" fill="#fff" font-family="sans-serif" font-size="38" font-weight="800">${safeTitle}</text><text x="38" y="438" fill="#fff" fill-opacity=".8" font-family="sans-serif" font-size="18">${safeMood.toUpperCase()}</text></svg>`;
+            return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(art)}`;
+        }
+
+        function generateCoverPreview() {
+            const title = document.getElementById('song-title-input').value.trim() || 'Island Lights';
+            const genre = document.getElementById('song-genre-select').value;
+            const mood = document.getElementById('song-mood-select').value;
+            document.getElementById('cover-preview').src = makeCoverDataUri(title, genre, mood);
+            document.getElementById('cover-preview-wrap').classList.remove('hidden');
+            document.getElementById('cover-preview-wrap').classList.add('flex');
+        }
+
         function renderCharts() {
             const container = document.getElementById('chart-list-container');
-            container.innerHTML = gameState.hot100Chart.map(song => `
+            const chartType = gameState.currentChartTab || 'hot100';
+            const entries = chartType === 'bb200' ? (gameState.albums || []) : (gameState.hot100Chart || []);
+            container.innerHTML = entries.length ? entries.map(song => `
                 <div class="glass-card p-3 rounded-xl border border-slate-800 flex items-center justify-between">
                     <div class="flex items-center gap-3">
+                        ${song.cover ? `<img src="${song.cover}" alt="${escapeHTML(song.title)} cover" class="h-12 w-12 rounded object-cover">` : ''}
                         <span class="w-6 text-center font-black text-sm text-indigo-400">#${song.rank}</span>
                         <div>
                             <h4 class="text-xs font-bold text-slate-100 flex items-center gap-1">
@@ -2672,7 +2943,7 @@
                     </div>
                     <span class="text-xs font-extrabold text-slate-300">${song.views}</span>
                 </div>
-            `).join('');
+            `).join('') : `<div class="rounded-xl border border-slate-800 p-4 text-xs text-slate-400">No ${chartType === 'bb200' ? 'albums' : 'singles'} released yet. Make one in the studio.</div>`;
         }
 
         function switchChartTab(type) {
@@ -2683,6 +2954,13 @@
             document.getElementById('chart-tab-bb200').className = type === 'bb200' 
                 ? "flex-1 py-2 text-xs font-bold text-center border-b-2 border-indigo-500 text-indigo-400"
                 : "flex-1 py-2 text-xs font-bold text-center border-b-2 border-transparent text-slate-400 hover:text-slate-200";
+            gameState.currentChartTab = type;
+            renderCharts();
+        }
+
+        function renderMiniGame() {
+            const score = document.getElementById('mini-game-score');
+            if (score && !miniGameSession) score.textContent = `Best: ${Number(gameState.miniGameBest || 0)}`;
         }
 
         function populateArtistSelect() {
@@ -2760,22 +3038,51 @@
             const title = document.getElementById('song-title-input').value.trim() || "Untitled Track";
             const artist = document.getElementById('song-artist-select').value;
             const explicit = document.getElementById('song-explicit-check').checked;
-
-            const newEntry = {
-                rank: 1,
-                title: title,
-                artist: artist,
-                views: "1.0M",
-                explicit: explicit
-            };
-
-            // Shift current chart down
-            gameState.hot100Chart.unshift(newEntry);
-            gameState.hot100Chart = gameState.hot100Chart.slice(0, 100);
-            gameState.hot100Chart.forEach((item, idx) => item.rank = idx + 1);
-
+            const type = document.getElementById('release-type-select').value;
+            const genre = document.getElementById('song-genre-select').value;
+            const mood = document.getElementById('song-mood-select').value;
+            const artistMii = miiData.find(mii => mii.name === artist);
+            const cover = makeCoverDataUri(title, genre, mood);
+            const newEntry = { rank: 1, title, artist, views: type === 'album' ? '1.8M' : '1.0M', explicit, genre, mood, cover };
+            if (type === 'album') {
+                newEntry.trackCount = Number(document.getElementById('song-album-tracks').value) || 6;
+                newEntry.tracks = Array.from({ length: newEntry.trackCount }, (_, index) => `${title} - Track ${index + 1}`);
+                gameState.albums.unshift(newEntry);
+                gameState.albums = gameState.albums.slice(0, 50);
+                gameState.albums.forEach((item, index) => { item.rank = index + 1; });
+                gameState.currentChartTab = 'bb200';
+                recordLifeEvent(`${artist} released the ${newEntry.trackCount}-track album ${title}.`);
+            } else {
+                gameState.hot100Chart.unshift(newEntry);
+                gameState.hot100Chart = gameState.hot100Chart.slice(0, 100);
+                gameState.hot100Chart.forEach((item, index) => { item.rank = index + 1; });
+                gameState.currentChartTab = 'hot100';
+                recordLifeEvent(`${artist} released ${title}, a ${mood.toLowerCase()} ${genre} single.`);
+            }
+            if (artistMii) artistMii.happiness = Math.min(100, Number(artistMii.happiness || 70) + 5);
+            gameState.netWorth += type === 'album' ? 85000 : 35000;
+            gameState.billboardHits += 1;
             renderCharts();
+            switchChartTab(gameState.currentChartTab);
+            updateHeaderStats(); renderLifeOverview(); persistGameSilently();
             switchTab('charts');
+        }
+
+        function autoReleaseWeeklyTrack() {
+            const artists = miiData.filter(mii => mii.alive && mii.age >= 13);
+            if (!artists.length) return;
+            const artist = artists[Math.floor(Math.random() * artists.length)];
+            const title = `${artist.name}'s Week ${gameState.week} Session`;
+            const genre = artist.genrePreference || 'Pop';
+            const cover = makeCoverDataUri(title, genre, 'Hopeful');
+            gameState.hot100Chart.unshift({ rank: 1, title, artist: artist.name, views: '0.2M', explicit: false, genre, mood: 'Hopeful', cover });
+            gameState.hot100Chart = gameState.hot100Chart.slice(0, 100);
+            gameState.hot100Chart.forEach((item, index) => { item.rank = index + 1; });
+            artist.happiness = Math.min(100, Number(artist.happiness || 70) + 3);
+            gameState.billboardHits += 1;
+            gameState.netWorth += 15000;
+            gameState.eventLog.unshift(`${artist.name} automatically released ${title}.`);
+            gameState.eventLog = gameState.eventLog.slice(0, 5);
         }
     </script>
 </body>
